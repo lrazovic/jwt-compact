@@ -61,7 +61,7 @@ impl Algorithm for Ed25519 {
     }
 
     fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        signing_key.sign(message, Some(Noise::default()))
+        signing_key.sign(message, None)
     }
 
     fn verify_signature(
