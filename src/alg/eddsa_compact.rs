@@ -1,7 +1,6 @@
 //! `EdDSA` algorithm implementation using the `ed25519-compact` crate.
 
-use ed25519_compact::{KeyPair, Noise, PublicKey, SecretKey, Seed, Signature};
-use rand_core::{CryptoRng, RngCore};
+use ed25519_compact::{KeyPair, PublicKey, SecretKey, Seed, Signature};
 
 use core::num::NonZeroUsize;
 
@@ -40,14 +39,6 @@ impl Ed25519 {
     /// This is a non-standard name, but it is used in some apps.
     pub fn with_specific_name() -> Renamed<Self> {
         Renamed::new(Self, "Ed25519")
-    }
-
-    /// Generate a new key pair.
-    pub fn generate<R: CryptoRng + RngCore>(rng: &mut R) -> (SecretKey, PublicKey) {
-        let mut seed = [0_u8; Seed::BYTES];
-        rng.fill_bytes(&mut seed);
-        let keypair = KeyPair::from_seed(Seed::new(seed));
-        (keypair.sk, keypair.pk)
     }
 }
 

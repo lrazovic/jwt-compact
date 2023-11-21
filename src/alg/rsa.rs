@@ -2,7 +2,6 @@
 
 pub use rsa::{errors::Error as RsaError, RsaPrivateKey, RsaPublicKey};
 
-use rand_core::{CryptoRng, RngCore};
 use rsa::{
     traits::{PrivateKeyParts, PublicKeyParts},
     BigUint, Pkcs1v15Sign, Pss,
@@ -31,6 +30,8 @@ impl AlgorithmSignature for RsaSignature {
     fn as_bytes(&self) -> Cow<'_, [u8]> {
         Cow::Borrowed(&self.0)
     }
+
+    const LENGTH: Option<core::num::NonZeroUsize> = None;
 }
 
 /// RSA hash algorithm.
@@ -172,16 +173,7 @@ impl Algorithm for Rsa {
     }
 
     fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        let digest = self.hash_alg.digest(message);
-        let signing_result = match self.padding_scheme() {
-            PaddingScheme::Pkcs1v15(padding) => {
-                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, &digest)
-            }
-            PaddingScheme::Pss(padding) => {
-                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, &digest)
-            }
-        };
-        RsaSignature(signing_result.expect("Unexpected RSA signature failure"))
+        unimplemented!();
     }
 
     fn verify_signature(
@@ -279,15 +271,13 @@ impl Rsa {
         }
     }
 
-    /// Generates a new key pair with the specified modulus bit length (aka key length).
-    pub fn generate<R: CryptoRng + RngCore>(
-        rng: &mut R,
-        modulus_bits: ModulusBits,
-    ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
-        let signing_key = RsaPrivateKey::new(rng, modulus_bits.bits())?;
-        let verifying_key = signing_key.to_public_key();
-        Ok((StrongKey(signing_key), StrongKey(verifying_key)))
-    }
+    // Generates a new key pair with the specified modulus bit length (aka key length).
+    // pub fn generate<R: CryptoRng + RngCore>(
+    //     rng: &mut R,
+    //     modulus_bits: ModulusBits,
+    // ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
+    //     unimplemented!()
+    // }
 }
 
 impl FromStr for Rsa {

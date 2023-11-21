@@ -32,7 +32,6 @@ anyhow = { version = "1.0.34", default-features = false }
 base64ct = { version = "1.5.2", features = ["alloc"] }
 ciborium = { version = "0.2.1", default-features = false, optional = true }
 chrono = { version = "0.4.22", default-features = false }
-rand_core = "0.6.2"
 serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
@@ -73,7 +72,7 @@ optional = true
 default-features = false
 
 [dependencies.ed25519-compact]
-version = "2.0.2"
+version = "2.0.4"
 optional = true
 default-features = false
 
@@ -89,7 +88,6 @@ criterion = "0.5.1"
 doc-comment = "0.3.3"
 hex-buffer-serde = "0.4.0"
 num-bigint = { package = "num-bigint-dig", version = "0.8.2" }
-rand = "0.8.3"
 uuid = { version = "1.5.0", features = ["serde", "v4"] }
 version-sync = "0.9"
 
@@ -107,7 +105,7 @@ clock = ["chrono/clock"]
 # `secp256k1` crypto backend; `lazy_static` is required for internal initialization.
 es256k = ["secp256k1", "lazy_static"]
 # RSA algorithm and its dependencies (currently, `getrandom`-based RNG).
-rsa = ["dep:rsa", "rand_core/getrandom", "sha2/oid"]
+rsa = ["dep:rsa", "sha2/oid"]
 
 [[bench]]
 name = "encoding"
