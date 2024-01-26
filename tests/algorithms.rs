@@ -484,7 +484,7 @@ fn test_algorithm_with_custom_header<A: Algorithm>(
     signing_key: &A::SigningKey,
     verifying_key: &A::VerifyingKey,
 ) {
-    type Untrusted<'a> = UntrustedToken<'a, HeaderExtensions>;
+    type Untrusted<'a> = UntrustedToken<HeaderExtensions>;
 
     let header = create_header();
     let claims = create_claims();

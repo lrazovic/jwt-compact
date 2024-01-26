@@ -159,7 +159,7 @@ pub trait AlgorithmExt: Algorithm {
     #[deprecated = "Use `.validator().validate()` for added flexibility"]
     fn validate_integrity<T>(
         &self,
-        token: &UntrustedToken<'_>,
+        token: &UntrustedToken,
         verifying_key: &Self::VerifyingKey,
     ) -> Result<Token<T>, ValidationError>
     where
@@ -172,7 +172,7 @@ pub trait AlgorithmExt: Algorithm {
     #[deprecated = "Use `.validator().validate_for_signed_token()` for added flexibility"]
     fn validate_for_signed_token<T>(
         &self,
-        token: &UntrustedToken<'_>,
+        token: &UntrustedToken,
         verifying_key: &Self::VerifyingKey,
     ) -> Result<SignedToken<Self, T>, ValidationError>
     where
@@ -257,7 +257,7 @@ impl<A: Algorithm> AlgorithmExt for A {
 
     fn validate_integrity<T>(
         &self,
-        token: &UntrustedToken<'_>,
+        token: &UntrustedToken,
         verifying_key: &Self::VerifyingKey,
     ) -> Result<Token<T>, ValidationError>
     where
@@ -268,7 +268,7 @@ impl<A: Algorithm> AlgorithmExt for A {
 
     fn validate_for_signed_token<T>(
         &self,
-        token: &UntrustedToken<'_>,
+        token: &UntrustedToken,
         verifying_key: &Self::VerifyingKey,
     ) -> Result<SignedToken<Self, T>, ValidationError>
     where
@@ -300,7 +300,7 @@ impl<A: Algorithm + ?Sized, T: DeserializeOwned> Validator<'_, A, T> {
     /// Validates the token integrity against a verifying key enclosed in this validator.
     pub fn validate<H: Clone>(
         self,
-        token: &UntrustedToken<'_, H>,
+        token: &UntrustedToken<H>,
     ) -> Result<Token<T, H>, ValidationError> {
         self.validate_for_signed_token(token)
             .map(|signed| signed.token)
@@ -310,7 +310,7 @@ impl<A: Algorithm + ?Sized, T: DeserializeOwned> Validator<'_, A, T> {
     /// and returns the validated [`Token`] together with its signature.
     pub fn validate_for_signed_token<H: Clone>(
         self,
-        token: &UntrustedToken<'_, H>,
+        token: &UntrustedToken<H>,
     ) -> Result<SignedToken<A, T, H>, ValidationError> {
         let expected_alg = self.algorithm.name();
         if expected_alg != token.algorithm() {

@@ -176,7 +176,9 @@ impl<'de, const N: usize> Deserialize<'de> for Thumbprint<N> {
 ///     .with_key_id("my-key-id")
 ///     .with_certificate_thumbprint(thumbprint);
 /// ```
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq)]
+#[derive(
+    Debug, Clone, Default, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq,
+)]
 #[non_exhaustive]
 pub struct Header<T = Empty> {
     /// URL of the JSON Web Key Set containing the key that has signed the token.
@@ -378,8 +380,8 @@ enum ContentType {
 /// # Ok::<_, anyhow::Error>(())
 /// ```
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
-pub struct UntrustedToken<'a, H = Empty> {
-    pub(crate) signed_data: Cow<'a, [u8]>,
+pub struct UntrustedToken<H = Empty> {
+    pub(crate) signed_data: Vec<u8>,
     header: Header<H>,
     algorithm: String,
     content_type: ContentType,
@@ -490,7 +492,7 @@ where
     }
 }
 
-impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
+impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
     type Error = ParseError;
 
     fn try_from(s: &'a str) -> Result<Self, Self::Error> {
@@ -520,7 +522,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
                 };
                 let signed_data = s.rsplit_once('.').unwrap().0.as_bytes();
                 Ok(Self {
-                    signed_data: Cow::Borrowed(signed_data),
+                    signed_data: signed_data.to_vec(),
                     header: header.inner,
                     algorithm: header.algorithm.into_owned(),
                     content_type,
@@ -533,7 +535,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
     }
 }
 
-impl<'a> UntrustedToken<'a> {
+impl<'a> UntrustedToken {
     /// Creates an untrusted token from a string. This is a shortcut for calling the [`TryFrom`]
     /// conversion.
     pub fn new<S: AsRef<str> + ?Sized>(s: &'a S) -> Result<Self, ParseError> {
@@ -541,11 +543,11 @@ impl<'a> UntrustedToken<'a> {
     }
 }
 
-impl<H> UntrustedToken<'_, H> {
+impl<H> UntrustedToken<H> {
     /// Converts this token to an owned form.
-    pub fn into_owned(self) -> UntrustedToken<'static, H> {
+    pub fn into_owned(self) -> UntrustedToken<H> {
         UntrustedToken {
-            signed_data: Cow::Owned(self.signed_data.into_owned()),
+            signed_data: self.signed_data.to_vec(),
             header: self.header,
             algorithm: self.algorithm,
             content_type: self.content_type,
