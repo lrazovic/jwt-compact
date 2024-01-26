@@ -7,6 +7,7 @@ use serde::{
 };
 // use smallvec::{smallvec, SmallVec};
 use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 
 use core::{cmp, fmt};
 
@@ -322,7 +323,7 @@ pub(crate) struct CompleteHeader<'a, T> {
     pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo)]
 enum ContentType {
     Json,
     #[cfg(feature = "ciborium")]
@@ -376,7 +377,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo)]
 pub struct UntrustedToken<'a, H = Empty> {
     pub(crate) signed_data: Cow<'a, [u8]>,
     header: Header<H>,

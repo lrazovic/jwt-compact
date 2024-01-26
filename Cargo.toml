@@ -53,6 +53,9 @@ secp256k1 = { version = "0.28", optional = true }
 parity-scale-codec = { version = "3", default-features = false, features = [
   "derive",
 ] }
+scale-info = { version = "2.10.0", default-features = false, features = [
+  "derive",
+] }
 
 [dependencies.k256]
 version = "0.13.2"
