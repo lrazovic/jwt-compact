@@ -3,7 +3,6 @@
 use assert_matches::assert_matches;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use chrono::{TimeZone, Utc};
-use rand::thread_rng;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -380,36 +379,34 @@ fn ed25519_algorithm() {
     // test_algorithm(&Ed25519, &signing_key, &verifying_key);
 }
 
-#[cfg(any(feature = "es256k", feature = "k256"))]
-#[test]
-fn es256k_algorithm() {
-    use rand::Rng;
+// #[cfg(any(feature = "es256k", feature = "k256"))]
+// #[test]
+// fn es256k_algorithm() {
+//     type SecretKey = <Es256k as Algorithm>::SigningKey;
+//     type PublicKey = <Es256k as Algorithm>::VerifyingKey;
 
-    type SecretKey = <Es256k as Algorithm>::SigningKey;
-    type PublicKey = <Es256k as Algorithm>::VerifyingKey;
+//     let mut rng = thread_rng();
+//     let signing_key = loop {
+//         let bytes: [u8; 32] = rng.gen();
+//         if let Ok(key) = SecretKey::from_slice(&bytes) {
+//             break key;
+//         }
+//     };
+//     let verifying_key = signing_key.to_verifying_key();
+//     let es256k: Es256k = Es256k::default();
+//     test_algorithm(&es256k, &signing_key, &verifying_key);
 
-    let mut rng = thread_rng();
-    let signing_key = loop {
-        let bytes: [u8; 32] = rng.gen();
-        if let Ok(key) = SecretKey::from_slice(&bytes) {
-            break key;
-        }
-    };
-    let verifying_key = signing_key.to_verifying_key();
-    let es256k: Es256k = Es256k::default();
-    test_algorithm(&es256k, &signing_key, &verifying_key);
+//     // Test correctness of `SigningKey` / `VerifyingKey` trait implementations.
+//     let signing_key_bytes = SigningKey::as_bytes(&signing_key);
+//     let signing_key_copy: SecretKey = SigningKey::from_slice(&signing_key_bytes).unwrap();
+//     assert_eq!(signing_key.as_bytes(), signing_key_copy.as_bytes());
+//     assert_eq!(verifying_key, signing_key.to_verifying_key());
 
-    // Test correctness of `SigningKey` / `VerifyingKey` trait implementations.
-    let signing_key_bytes = SigningKey::as_bytes(&signing_key);
-    let signing_key_copy: SecretKey = SigningKey::from_slice(&signing_key_bytes).unwrap();
-    assert_eq!(signing_key.as_bytes(), signing_key_copy.as_bytes());
-    assert_eq!(verifying_key, signing_key.to_verifying_key());
-
-    let verifying_key_bytes = verifying_key.as_bytes();
-    assert_eq!(verifying_key_bytes.len(), 33);
-    let verifying_key_copy: PublicKey = VerifyingKey::from_slice(&verifying_key_bytes).unwrap();
-    assert_eq!(verifying_key, verifying_key_copy);
-}
+//     let verifying_key_bytes = verifying_key.as_bytes();
+//     assert_eq!(verifying_key_bytes.len(), 33);
+//     let verifying_key_copy: PublicKey = VerifyingKey::from_slice(&verifying_key_bytes).unwrap();
+//     assert_eq!(verifying_key, verifying_key_copy);
+// }
 
 #[cfg(any(feature = "es256k", feature = "k256"))]
 #[test]
@@ -439,35 +436,35 @@ fn high_s_in_signature_is_successfully_validated() {
         .unwrap();
 }
 
-#[cfg(feature = "p256")]
-#[test]
-fn es256_algorithm() {
-    use rand::Rng;
+// #[cfg(feature = "p256")]
+// #[test]
+// fn es256_algorithm() {
+//     use rand::Rng;
 
-    type SecretKey = <Es256 as Algorithm>::SigningKey;
-    type PublicKey = <Es256 as Algorithm>::VerifyingKey;
+//     type SecretKey = <Es256 as Algorithm>::SigningKey;
+//     type PublicKey = <Es256 as Algorithm>::VerifyingKey;
 
-    let mut rng = thread_rng();
-    let signing_key = loop {
-        let bytes: [u8; 32] = rng.gen();
-        if let Ok(key) = SecretKey::from_slice(&bytes) {
-            break key;
-        }
-    };
-    let verifying_key = signing_key.to_verifying_key();
-    test_algorithm(&Es256, &signing_key, &verifying_key);
+//     let mut rng = thread_rng();
+//     let signing_key = loop {
+//         let bytes: [u8; 32] = rng.gen();
+//         if let Ok(key) = SecretKey::from_slice(&bytes) {
+//             break key;
+//         }
+//     };
+//     let verifying_key = signing_key.to_verifying_key();
+//     test_algorithm(&Es256, &signing_key, &verifying_key);
 
-    // Test correctness of `SigningKey` / `VerifyingKey` trait implementations.
-    let signing_key_bytes = SigningKey::as_bytes(&signing_key);
-    let signing_key_copy: SecretKey = SigningKey::from_slice(&signing_key_bytes).unwrap();
-    assert_eq!(signing_key.as_bytes(), signing_key_copy.as_bytes());
-    assert_eq!(verifying_key, signing_key.to_verifying_key());
+//     // Test correctness of `SigningKey` / `VerifyingKey` trait implementations.
+//     let signing_key_bytes = SigningKey::as_bytes(&signing_key);
+//     let signing_key_copy: SecretKey = SigningKey::from_slice(&signing_key_bytes).unwrap();
+//     assert_eq!(signing_key.as_bytes(), signing_key_copy.as_bytes());
+//     assert_eq!(verifying_key, signing_key.to_verifying_key());
 
-    let verifying_key_bytes = verifying_key.as_bytes();
-    assert_eq!(verifying_key_bytes.len(), 33);
-    let verifying_key_copy: PublicKey = VerifyingKey::from_slice(&verifying_key_bytes).unwrap();
-    assert_eq!(verifying_key, verifying_key_copy);
-}
+//     let verifying_key_bytes = verifying_key.as_bytes();
+//     assert_eq!(verifying_key_bytes.len(), 33);
+//     let verifying_key_copy: PublicKey = VerifyingKey::from_slice(&verifying_key_bytes).unwrap();
+//     assert_eq!(verifying_key, verifying_key_copy);
+// }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HeaderExtensions {

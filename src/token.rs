@@ -321,7 +321,7 @@ pub(crate) struct CompleteHeader<'a, T> {
     pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode)]
 enum ContentType {
     Json,
     #[cfg(feature = "ciborium")]
@@ -375,14 +375,15 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone)]
+use parity_scale_codec::Decode;
+#[derive(Debug, Clone, Decode)]
 pub struct UntrustedToken<'a, H = Empty> {
     pub(crate) signed_data: Cow<'a, [u8]>,
     header: Header<H>,
     algorithm: String,
     content_type: ContentType,
     serialized_claims: Vec<u8>,
-    signature: SmallVec<[u8; SIGNATURE_SIZE]>,
+    signature: Vec<u8>,
 }
 
 /// Token with validated integrity.
@@ -500,7 +501,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
                 let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
                     .map_err(|_| ParseError::InvalidBase64Encoding)?;
 
-                let mut decoded_signature = smallvec![0; 3 * (signature.len() + 3) / 4];
+                let mut decoded_signature = Vec::<u8>::with_capacity(SIGNATURE_SIZE);
                 let signature_len =
                     Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
                         .map_err(|_| ParseError::InvalidBase64Encoding)?
@@ -523,7 +524,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
                     algorithm: header.algorithm.into_owned(),
                     content_type,
                     serialized_claims,
-                    signature: decoded_signature,
+                    signature: decoded_signature.to_vec(),
                 })
             }
             _ => Err(ParseError::InvalidTokenStructure),

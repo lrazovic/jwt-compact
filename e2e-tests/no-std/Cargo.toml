@@ -9,23 +9,23 @@ repository = "https://github.com/slowli/jwt-compact"
 publish = false
 
 [dependencies]
-anyhow = { version = "1.0.34", default-features = false }
-chrono = { version = "0.4.22", default-features = false }
-const-decoder = "0.3.0"
-serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+anyhow = { version = "^1.0.34", default-features = false }
+chrono = { version = "^0.4.22", default-features = false }
+const-decoder = "^0.3.0"
+serde = { version = "^1.0", default-features = false, features = ["alloc", "derive"] }
 
 # Cortex-M dependencies.
 cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
-cortex-m-rt = "0.7"
-cortex-m-semihosting = "0.5"
-embedded-alloc = "0.5.1"
-panic-halt = "0.2.0"
+cortex-m-rt = "^0.7"
+cortex-m-semihosting = "^0.5"
+embedded-alloc = "^0.5.1"
+panic-halt = "^0.2.0"
 
 # RSA-specific dependencies. Everything besides `rsa` is needed to set up an RNG.
-getrandom = { version = "0.2", features = ["custom"], optional = true }
-once_cell = { version = "1.16.0", default-features = false, optional = true }
-rand_chacha = { version = "0.3.1", default-features = false, optional = true }
-rsa = { version = "0.9", default-features = false, optional = true }
+getrandom = { version = "^0.2", features = ["custom"], optional = true }
+once_cell = { version = "^1.16.0", default-features = false, optional = true }
+rand_chacha = { version = "^0.3.1", default-features = false, optional = true }
+rsa = { version = "^0.9", default-features = false, optional = true }
 
 [dependencies.jwt-compact]
 path = "../.."

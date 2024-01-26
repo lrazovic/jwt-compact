@@ -32,7 +32,10 @@ anyhow = { version = "1.0.34", default-features = false }
 base64ct = { version = "1.5.2", features = ["alloc"] }
 ciborium = { version = "0.2.1", default-features = false, optional = true }
 chrono = { version = "0.4.22", default-features = false }
-serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+serde = { version = "1.0", default-features = false, features = [
+  "alloc",
+  "derive",
+] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 # SHA crypto backend (private dependency; re-exported `digest` crate is public).
@@ -47,6 +50,9 @@ zeroize = { version = "^1.4.3", features = ["zeroize_derive"] }
 
 # Crypto backends (all public dependencies).
 secp256k1 = { version = "0.28", optional = true }
+parity-scale-codec = { version = "3", default-features = false, features = [
+  "derive",
+] }
 
 [dependencies.k256]
 version = "0.13.2"
