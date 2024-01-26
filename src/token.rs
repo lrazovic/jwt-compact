@@ -62,7 +62,7 @@ const SIGNATURE_SIZE: usize = 128;
 /// # Ok(())
 /// # }
 /// ```
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Decode, Encode, TypeInfo)]
 #[non_exhaustive]
 pub enum Thumbprint<const N: usize> {
     /// Byte representation of a SHA-1 or SHA-256 digest.
@@ -176,7 +176,7 @@ impl<'de, const N: usize> Deserialize<'de> for Thumbprint<N> {
 ///     .with_key_id("my-key-id")
 ///     .with_certificate_thumbprint(thumbprint);
 /// ```
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Decode, Encode, TypeInfo)]
 #[non_exhaustive]
 pub struct Header<T = Empty> {
     /// URL of the JSON Web Key Set containing the key that has signed the token.
