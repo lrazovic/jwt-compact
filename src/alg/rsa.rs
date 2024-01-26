@@ -2,6 +2,7 @@
 
 pub use rsa::{errors::Error as RsaError, RsaPrivateKey, RsaPublicKey};
 
+use rand_core::{CryptoRng, RngCore};
 use rsa::{
     traits::{PrivateKeyParts, PublicKeyParts},
     BigUint, Pkcs1v15Sign, Pss,
@@ -12,7 +13,7 @@ use core::{fmt, str::FromStr};
 
 use crate::{
     alg::{SecretBytes, StrongKey, WeakKeyError},
-    alloc::{Box, Cow, String, ToOwned, Vec},
+    alloc::{Cow, String, ToOwned, Vec},
     jwk::{JsonWebKey, JwkError, KeyType, RsaPrimeFactor, RsaPrivateParts},
     Algorithm, AlgorithmSignature,
 };
@@ -30,8 +31,6 @@ impl AlgorithmSignature for RsaSignature {
     fn as_bytes(&self) -> Cow<'_, [u8]> {
         Cow::Borrowed(&self.0)
     }
-
-    const LENGTH: Option<core::num::NonZeroUsize> = None;
 }
 
 /// RSA hash algorithm.
@@ -43,22 +42,29 @@ enum HashAlg {
 }
 
 impl HashAlg {
-    fn digest(self, message: &[u8]) -> Box<[u8]> {
+    fn digest(self, message: &[u8]) -> HashDigest {
         match self {
-            Self::Sha256 => {
-                let digest: [u8; 32] = *(Sha256::digest(message).as_ref());
-                Box::new(digest)
-            }
-            Self::Sha384 => {
-                let mut digest = [0_u8; 48];
-                digest.copy_from_slice(Sha384::digest(message).as_ref());
-                Box::new(digest)
-            }
-            Self::Sha512 => {
-                let mut digest = [0_u8; 64];
-                digest.copy_from_slice(Sha512::digest(message).as_ref());
-                Box::new(digest)
-            }
+            Self::Sha256 => HashDigest::Sha256(Sha256::digest(message).into()),
+            Self::Sha384 => HashDigest::Sha384(Sha384::digest(message).into()),
+            Self::Sha512 => HashDigest::Sha512(Sha512::digest(message).into()),
+        }
+    }
+}
+
+/// Output of a [`HashAlg`].
+#[derive(Debug)]
+enum HashDigest {
+    Sha256([u8; 32]),
+    Sha384([u8; 48]),
+    Sha512([u8; 64]),
+}
+
+impl AsRef<[u8]> for HashDigest {
+    fn as_ref(&self) -> &[u8] {
+        match self {
+            Self::Sha256(bytes) => bytes,
+            Self::Sha384(bytes) => bytes,
+            Self::Sha512(bytes) => bytes,
         }
     }
 }
@@ -173,7 +179,17 @@ impl Algorithm for Rsa {
     }
 
     fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        unimplemented!();
+        let digest = self.hash_alg.digest(message);
+        let digest = digest.as_ref();
+        let signing_result = match self.padding_scheme() {
+            PaddingScheme::Pkcs1v15(padding) => {
+                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, digest)
+            }
+            PaddingScheme::Pss(padding) => {
+                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, digest)
+            }
+        };
+        RsaSignature(signing_result.expect("Unexpected RSA signature failure"))
     }
 
     fn verify_signature(
@@ -183,11 +199,10 @@ impl Algorithm for Rsa {
         message: &[u8],
     ) -> bool {
         let digest = self.hash_alg.digest(message);
+        let digest = digest.as_ref();
         let verify_result = match self.padding_scheme() {
-            PaddingScheme::Pkcs1v15(padding) => {
-                verifying_key.verify(padding, &digest, &signature.0)
-            }
-            PaddingScheme::Pss(padding) => verifying_key.verify(padding, &digest, &signature.0),
+            PaddingScheme::Pkcs1v15(padding) => verifying_key.verify(padding, digest, &signature.0),
+            PaddingScheme::Pss(padding) => verifying_key.verify(padding, digest, &signature.0),
         };
         verify_result.is_ok()
     }
@@ -271,13 +286,15 @@ impl Rsa {
         }
     }
 
-    // Generates a new key pair with the specified modulus bit length (aka key length).
-    // pub fn generate<R: CryptoRng + RngCore>(
-    //     rng: &mut R,
-    //     modulus_bits: ModulusBits,
-    // ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
-    //     unimplemented!()
-    // }
+    /// Generates a new key pair with the specified modulus bit length (aka key length).
+    pub fn generate<R: CryptoRng + RngCore>(
+        rng: &mut R,
+        modulus_bits: ModulusBits,
+    ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
+        let signing_key = RsaPrivateKey::new(rng, modulus_bits.bits())?;
+        let verifying_key = signing_key.to_public_key();
+        Ok((StrongKey(signing_key), StrongKey(verifying_key)))
+    }
 }
 
 impl FromStr for Rsa {
@@ -379,7 +396,7 @@ impl<'a> From<&'a RsaPrivateKey> for JsonWebKey<'a> {
     fn from(key: &'a RsaPrivateKey) -> JsonWebKey<'a> {
         const MSG: &str = "RsaPrivateKey must have at least 2 prime factors";
 
-        let p = key.primes().get(0).expect(MSG);
+        let p = key.primes().first().expect(MSG);
         let q = key.primes().get(1).expect(MSG);
 
         let private_parts = RsaPrivateParts {

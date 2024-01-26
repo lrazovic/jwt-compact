@@ -2,6 +2,7 @@
 
 use hmac::digest::generic_array::{typenum::Unsigned, GenericArray};
 use hmac::{digest::CtOutput, Hmac, Mac as _};
+use rand_core::{CryptoRng, RngCore};
 use sha2::{
     digest::{core_api::BlockSizeUser, OutputSizeUser},
     Sha256, Sha384, Sha512,
@@ -79,6 +80,12 @@ macro_rules! define_hmac_key {
         }
 
         impl $name {
+            /// Generates a random key using a cryptographically secure RNG.
+            pub fn generate<R: CryptoRng + RngCore>(rng: &mut R) -> StrongKey<Self> {
+                let mut key = $name(smallvec![0; <$digest as BlockSizeUser>::BlockSize::to_usize()]);
+                rng.fill_bytes(&mut key.0);
+                StrongKey(key)
+            }
 
             /// Creates a key from the specified `bytes`.
             pub fn new(bytes: impl AsRef<[u8]>) -> Self {

@@ -1,13 +1,13 @@
 //! `Token` and closely related types.
 
 use base64ct::{Base64UrlUnpadded, Encoding};
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use serde::{
     de::{DeserializeOwned, Error as DeError, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
-// use smallvec::{smallvec, SmallVec};
-use parity_scale_codec::{Decode, Encode};
-use scale_info::TypeInfo;
+use smallvec::{smallvec, SmallVec};
 
 use core::{cmp, fmt};
 
@@ -315,7 +315,7 @@ impl<T> Header<T> {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Decode, Encode, TypeInfo)]
 pub(crate) struct CompleteHeader<'a, T> {
     #[serde(rename = "alg")]
     pub algorithm: Cow<'a, str>,
@@ -380,12 +380,13 @@ enum ContentType {
 /// # Ok::<_, anyhow::Error>(())
 /// ```
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
-pub struct UntrustedToken<H = Empty> {
-    pub(crate) signed_data: Vec<u8>,
+pub struct UntrustedToken<'a, H = Empty> {
+    pub(crate) signed_data: Cow<'a, [u8]>,
     header: Header<H>,
     algorithm: String,
     content_type: ContentType,
     serialized_claims: Vec<u8>,
+    //signature: SmallVec<[u8; SIGNATURE_SIZE]>,
     signature: Vec<u8>,
 }
 
@@ -492,7 +493,7 @@ where
     }
 }
 
-impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
+impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<'a, H> {
     type Error = ParseError;
 
     fn try_from(s: &'a str) -> Result<Self, Self::Error> {
@@ -504,7 +505,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
                 let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
                     .map_err(|_| ParseError::InvalidBase64Encoding)?;
 
-                let mut decoded_signature = Vec::<u8>::with_capacity(SIGNATURE_SIZE);
+                let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> = smallvec![0; 3 * (signature.len() + 3) / 4];
                 let signature_len =
                     Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
                         .map_err(|_| ParseError::InvalidBase64Encoding)?
@@ -522,7 +523,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
                 };
                 let signed_data = s.rsplit_once('.').unwrap().0.as_bytes();
                 Ok(Self {
-                    signed_data: signed_data.to_vec(),
+                    signed_data: Cow::Borrowed(signed_data),
                     header: header.inner,
                     algorithm: header.algorithm.into_owned(),
                     content_type,
@@ -535,7 +536,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
     }
 }
 
-impl<'a> UntrustedToken {
+impl<'a> UntrustedToken<'a> {
     /// Creates an untrusted token from a string. This is a shortcut for calling the [`TryFrom`]
     /// conversion.
     pub fn new<S: AsRef<str> + ?Sized>(s: &'a S) -> Result<Self, ParseError> {
@@ -543,11 +544,11 @@ impl<'a> UntrustedToken {
     }
 }
 
-impl<H> UntrustedToken<H> {
+impl<H> UntrustedToken<'_, H> {
     /// Converts this token to an owned form.
-    pub fn into_owned(self) -> UntrustedToken<H> {
+    pub fn into_owned(self) -> UntrustedToken<'static, H> {
         UntrustedToken {
-            signed_data: self.signed_data.to_vec(),
+            signed_data: Cow::Owned(self.signed_data.into_owned()),
             header: self.header,
             algorithm: self.algorithm,
             content_type: self.content_type,
