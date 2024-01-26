@@ -176,7 +176,7 @@ impl<'de, const N: usize> Deserialize<'de> for Thumbprint<N> {
 ///     .with_key_id("my-key-id")
 ///     .with_certificate_thumbprint(thumbprint);
 /// ```
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Decode, Encode, TypeInfo)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Header<T = Empty> {
     /// URL of the JSON Web Key Set containing the key that has signed the token.
@@ -377,7 +377,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode, TypeInfo)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
 pub struct UntrustedToken<'a, H = Empty> {
     pub(crate) signed_data: Cow<'a, [u8]>,
     header: Header<H>,
