@@ -1,4 +1,6 @@
 use chrono::{DateTime, Duration, Utc};
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 
 use crate::{Claim, ValidationError};
@@ -62,7 +64,20 @@ impl Default for TimeOptions {
 }
 
 /// A structure with no fields that can be used as a type parameter to `Claims`.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    Encode,
+    Decode,
+    TypeInfo,
+)]
 pub struct Empty {}
 
 /// Claims encoded in a token.
