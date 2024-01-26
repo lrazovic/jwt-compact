@@ -5,7 +5,8 @@ use serde::{
     de::{DeserializeOwned, Error as DeError, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
-use smallvec::{smallvec, SmallVec};
+// use smallvec::{smallvec, SmallVec};
+use parity_scale_codec::{Decode, Encode};
 
 use core::{cmp, fmt};
 
@@ -321,7 +322,7 @@ pub(crate) struct CompleteHeader<'a, T> {
     pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode)]
 enum ContentType {
     Json,
     #[cfg(feature = "ciborium")]
@@ -375,8 +376,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-use parity_scale_codec::Decode;
-#[derive(Debug, Clone, Decode)]
+#[derive(Debug, Clone, Decode, Encode)]
 pub struct UntrustedToken<'a, H = Empty> {
     pub(crate) signed_data: Cow<'a, [u8]>,
     header: Header<H>,
