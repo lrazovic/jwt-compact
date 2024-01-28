@@ -1769,6 +1769,7 @@ version = "0.8.0"
 dependencies = [
  "anyhow",
  "base64ct",
+ "bounded-collections",
  "chrono",
  "ciborium",
  "ed25519-compact",

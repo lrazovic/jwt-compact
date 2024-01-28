@@ -91,7 +91,7 @@ pub struct Renamed<A> {
 
 impl<A: Algorithm> Renamed<A> {
 	/// Creates a renamed algorithm.
-	pub fn new(algorithm: A, new_name: &'static str) -> Self {
+	pub const fn new(algorithm: A, new_name: &'static str) -> Self {
 		Self { inner: algorithm, name: new_name }
 	}
 }

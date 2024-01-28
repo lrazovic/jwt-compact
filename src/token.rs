@@ -1,7 +1,8 @@
 //! `Token` and closely related types.
 
 use base64ct::{Base64UrlUnpadded, Encoding};
-use parity_scale_codec::{Decode, Encode};
+use bounded_collections::{BoundedVec, ConstU32};
+use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use serde::{
 	de::{DeserializeOwned, Error as DeError, Visitor},
@@ -302,7 +303,7 @@ impl<T> Header<T> {
 	}
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq)]
 pub(crate) struct CompleteHeader<'a, T> {
 	#[serde(rename = "alg")]
 	pub algorithm: Cow<'a, str>,
@@ -312,7 +313,7 @@ pub(crate) struct CompleteHeader<'a, T> {
 	pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen)]
 enum ContentType {
 	Json,
 	#[cfg(feature = "ciborium")]
@@ -366,14 +367,19 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen)]
 pub struct UntrustedToken<H = Empty> {
-	pub(crate) signed_data: Vec<u8>,
+	// TODO: Find a reasonable upper bound for the signed data size.
+	pub(crate) signed_data: BoundedVec<u8, ConstU32<768>>,
 	header: Header<H>,
-	algorithm: String,
+	// The algorithm is a very short string.
+	algorithm: BoundedVec<u8, ConstU32<8>>,
 	content_type: ContentType,
-	serialized_claims: Vec<u8>,
-	signature: Vec<u8>,
+	// TODO: Find a reasonable upper bound for the claims size.
+	serialized_claims: BoundedVec<u8, ConstU32<512>>,
+	/// SIGNATURE_SIZE is the maximum size of a signature.
+	/// SIGNATURE_SIZE === 128
+	signature: BoundedVec<u8, ConstU32<128>>,
 }
 
 /// Token with validated integrity.
@@ -441,6 +447,7 @@ impl<T, H> Token<T, H> {
 /// # } // end main()
 /// ```
 #[non_exhaustive]
+#[derive(Encode, Decode, MaxEncodedLen)]
 pub struct SignedToken<A: Algorithm + ?Sized, T, H = Empty> {
 	/// Token signature.
 	pub signature: A::Signature,
@@ -480,14 +487,16 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
 		match &token_parts[..] {
 			[header, claims, signature] => {
 				let header = Base64UrlUnpadded::decode_vec(header).map_err(|_| ParseError::InvalidBase64Encoding)?;
-				let serialized_claims =
-					Base64UrlUnpadded::decode_vec(claims).map_err(|_| ParseError::InvalidBase64Encoding)?;
-
+				let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
+					.map_err(|_| ParseError::InvalidBase64Encoding)
+					.and_then(|claims| BoundedVec::try_from(claims).map_err(|_| ParseError::ClaimsTooLarge))?;
 				let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> = smallvec![0; 3 * (signature.len() + 3) / 4];
 				let signature_len = Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
 					.map_err(|_| ParseError::InvalidBase64Encoding)?
 					.len();
 				decoded_signature.truncate(signature_len);
+				let bounded_decoded_signature =
+					BoundedVec::try_from(decoded_signature.to_vec()).map_err(|_| ParseError::SignatureTooLarge)?;
 
 				let header: CompleteHeader<_> = serde_json::from_slice(&header).map_err(ParseError::MalformedHeader)?;
 				let content_type = match header.content_type {
@@ -498,13 +507,17 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
 					Some(s) => return Err(ParseError::UnsupportedContentType(s)),
 				};
 				let signed_data = s.rsplit_once('.').unwrap().0.as_bytes();
+				let bounded_signed_data =
+					BoundedVec::try_from(signed_data.to_vec()).map_err(|_| ParseError::SignedDataTooLarge)?;
+				let bounded_header_algorithm = BoundedVec::try_from(header.algorithm.as_bytes().to_vec())
+					.map_err(|_| ParseError::SignedDataTooLarge)?;
 				Ok(Self {
-					signed_data: signed_data.to_vec(),
+					signed_data: bounded_signed_data,
 					header: header.inner,
-					algorithm: header.algorithm.into_owned(),
+					algorithm: bounded_header_algorithm,
 					content_type,
 					serialized_claims,
-					signature: decoded_signature.to_vec(),
+					signature: bounded_decoded_signature,
 				})
 			},
 			_ => Err(ParseError::InvalidTokenStructure),
@@ -524,7 +537,7 @@ impl<H> UntrustedToken<H> {
 	/// Converts this token to an owned form.
 	pub fn into_owned(self) -> UntrustedToken<H> {
 		UntrustedToken {
-			signed_data: self.signed_data.to_vec(),
+			signed_data: self.signed_data,
 			header: self.header,
 			algorithm: self.algorithm,
 			content_type: self.content_type,
@@ -540,7 +553,7 @@ impl<H> UntrustedToken<H> {
 
 	/// Gets the integrity algorithm used to secure the token.
 	pub fn algorithm(&self) -> &str {
-		&self.algorithm
+		core::str::from_utf8(&self.algorithm).expect("algorithm is always valid UTF-8")
 	}
 
 	/// Returns signature bytes from the token. These bytes are **not** guaranteed to form a valid

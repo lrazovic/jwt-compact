@@ -129,6 +129,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "bounded-collections"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca548b6163b872067dc5eb82fd130c56881435e30367d2073594a3d9744120dd"
+dependencies = [
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -908,6 +920,7 @@ dependencies = [
  "anyhow",
  "assert_matches",
  "base64ct",
+ "bounded-collections",
  "chrono",
  "ciborium",
  "const-decoder",

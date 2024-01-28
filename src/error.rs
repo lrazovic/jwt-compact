@@ -31,6 +31,12 @@ pub enum ParseError {
 	///
 	/// [cty]: https://tools.ietf.org/html/rfc7515#section-4.1.10
 	UnsupportedContentType(String),
+	/// Payload is too large.
+	ClaimsTooLarge,
+	/// Signature too large.
+	SignatureTooLarge,
+	/// Signed data too large.
+	SignedDataTooLarge,
 }
 
 impl fmt::Display for ParseError {
@@ -41,6 +47,15 @@ impl fmt::Display for ParseError {
 			Self::MalformedHeader(err) => write!(formatter, "malformed token header: {err}"),
 			Self::UnsupportedContentType(ty) => {
 				write!(formatter, "unsupported content type: {ty}")
+			},
+			Self::ClaimsTooLarge => {
+				write!(formatter, "claims too large")
+			},
+			Self::SignatureTooLarge => {
+				write!(formatter, "signature too large")
+			},
+			Self::SignedDataTooLarge => {
+				write!(formatter, "signed data too large")
 			},
 		}
 	}
