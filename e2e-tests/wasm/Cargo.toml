@@ -28,3 +28,11 @@ getrandom = { version = "0.2", features = ["js"] }
 path = "../.."
 default-features = false
 features = ["clock", "ed25519-compact", "rsa", "k256", "p256"]
+
+[features]
+std = [
+	"getrandom/std",
+	"jwt-compact/std",
+	"serde/std",
+	"serde_json/std"
+]

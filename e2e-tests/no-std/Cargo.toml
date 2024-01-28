@@ -36,3 +36,14 @@ default-features = false
 [features]
 ed25519 = ["getrandom", "once_cell", "rand_chacha", "jwt-compact/ed25519-compact"]
 rsa = ["getrandom", "once_cell", "rand_chacha", "dep:rsa", "jwt-compact/rsa"]
+std = [
+	"anyhow/std",
+	"chrono/std",
+	"cortex-m/std",
+	"getrandom?/std",
+	"jwt-compact/std",
+	"once_cell?/std",
+	"rand_chacha?/std",
+	"rsa?/std",
+	"serde/std"
+]
