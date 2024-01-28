@@ -1,13 +1,13 @@
 //! `Token` and closely related types.
 
 use base64ct::{Base64UrlUnpadded, Encoding};
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use serde::{
     de::{DeserializeOwned, Error as DeError, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
-// use smallvec::{smallvec, SmallVec};
-use parity_scale_codec::{Decode, Encode};
-use scale_info::TypeInfo;
+use smallvec::{smallvec, SmallVec};
 
 use core::{cmp, fmt};
 
@@ -504,7 +504,7 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
                 let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
                     .map_err(|_| ParseError::InvalidBase64Encoding)?;
 
-                let mut decoded_signature = Vec::<u8>::with_capacity(SIGNATURE_SIZE);
+                let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> = smallvec![0; 3 * (signature.len() + 3) / 4];
                 let signature_len =
                     Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
                         .map_err(|_| ParseError::InvalidBase64Encoding)?

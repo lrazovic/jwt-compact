@@ -2,6 +2,7 @@
 
 pub use rsa::{errors::Error as RsaError, RsaPrivateKey, RsaPublicKey};
 
+use rand_core::{CryptoRng, RngCore};
 use rsa::{
     traits::{PrivateKeyParts, PublicKeyParts},
     BigUint, Pkcs1v15Sign, Pss,
@@ -12,7 +13,7 @@ use core::{fmt, str::FromStr};
 
 use crate::{
     alg::{SecretBytes, StrongKey, WeakKeyError},
-    alloc::{Box, Cow, String, ToOwned, Vec},
+    alloc::{Cow, String, ToOwned, Vec},
     jwk::{JsonWebKey, JwkError, KeyType, RsaPrimeFactor, RsaPrivateParts},
     Algorithm, AlgorithmSignature,
 };

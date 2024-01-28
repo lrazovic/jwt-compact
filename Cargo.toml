@@ -2,12 +2,12 @@
 name = "jwt-compact"
 version = "0.8.0"
 authors = [
-  "Alex Ostrovski <ostrovski.alex@gmail.com>",
-  "Akhil Velagapudi <akhilvelagapudi@gmail.com>",
-  "Frank Denis <github@pureftpd.org>",
-  "Maximilian Münchow <github@maxmuen.de>",
-  "Eran Rundstein <eran@rundste.in>",
-  "Bruno Green",
+	"Alex Ostrovski <ostrovski.alex@gmail.com>",
+	"Akhil Velagapudi <akhilvelagapudi@gmail.com>",
+	"Frank Denis <github@pureftpd.org>",
+	"Maximilian Münchow <github@maxmuen.de>",
+	"Eran Rundstein <eran@rundste.in>",
+	"Bruno Green",
 ]
 edition = "2021"
 rust-version = "1.65"
@@ -33,10 +33,11 @@ base64ct = { version = "1.5.2", features = ["alloc"] }
 ciborium = { version = "0.2.1", default-features = false, optional = true }
 chrono = { version = "0.4.22", default-features = false }
 serde = { version = "1.0", default-features = false, features = [
-  "alloc",
-  "derive",
+	"alloc",
+	"derive",
 ] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+rand_core = { version = "0.6.4", default-features = false, optional = true }
 
 # SHA crypto backend (private dependency; re-exported `digest` crate is public).
 hmac = "0.12.0"
@@ -51,10 +52,10 @@ zeroize = { version = "^1.4.3", features = ["zeroize_derive"] }
 # Crypto backends (all public dependencies).
 secp256k1 = { version = "0.28", optional = true }
 parity-scale-codec = { version = "3", default-features = false, features = [
-  "derive",
+	"derive",
 ] }
 scale-info = { version = "2.10.0", default-features = false, features = [
-  "derive",
+	"derive",
 ] }
 
 [dependencies.k256]
@@ -99,6 +100,7 @@ hex-buffer-serde = "0.4.0"
 num-bigint = { package = "num-bigint-dig", version = "0.8.2" }
 uuid = { version = "1.5.0", features = ["serde", "v4"] }
 version-sync = "0.9"
+rand = "0.8.3"
 
 [features]
 default = ["std", "clock", "ciborium"]
@@ -121,7 +123,8 @@ std = [
 	"serde/std",
 	"sha2/std",
 	"subtle/std",
-	"zeroize/std"
+	"zeroize/std",
+	"rand_core",
 ]
 # Enables getting the current time using `Utc::now()` from `chrono`.
 # Without it, some `TimeOptions` constructors, such as the `Default` impl,

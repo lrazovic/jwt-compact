@@ -47,3 +47,6 @@ std = [
 	"rsa?/std",
 	"serde/std"
 ]
+clock = []
+es256k = []
+ciborium = []

@@ -4,7 +4,7 @@ use assert_matches::assert_matches;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use chrono::{Duration, TimeZone, Utc};
 use hex_buffer_serde::{Hex as _, HexForm};
-// use rand::{seq::index::sample as sample_indexes, thread_rng};
+use rand::thread_rng;
 use serde::{Deserialize, Serialize};
 
 use jwt_compact::{prelude::*, Algorithm, ValidationError};
@@ -77,9 +77,8 @@ pub fn test_algorithm<A: Algorithm>(
     let mangled_bits: Box<dyn Iterator<Item = usize>> = if signature_bits <= MAX_MANGLED_BITS {
         Box::new(0..signature_bits)
     } else {
-        // let indexes = sample_indexes(&mut thread_rng(), signature_bits, MAX_MANGLED_BITS);
-        // Box::new(indexes.into_iter())
-        unimplemented!()
+        let indexes = rand::seq::index::sample(&mut thread_rng(), signature_bits, MAX_MANGLED_BITS);
+        Box::new(indexes.into_iter())
     };
 
     for i in mangled_bits {

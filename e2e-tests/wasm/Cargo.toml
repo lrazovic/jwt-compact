@@ -36,3 +36,7 @@ std = [
 	"serde/std",
 	"serde_json/std"
 ]
+clock = []
+es256k = []
+rsa = []
+ciborium = []
