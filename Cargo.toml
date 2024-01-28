@@ -28,10 +28,10 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 # Public dependencies (present in the public API).
-anyhow = { version = "1.0.34", default-features = false }
-base64ct = { version = "1.5.2", features = ["alloc"] }
-ciborium = { version = "0.2.1", default-features = false, optional = true }
-chrono = { version = "0.4.22", default-features = false }
+anyhow = { version = "1.0.79", default-features = false }
+base64ct = { version = "1.6.0", features = ["alloc"] }
+ciborium = { version = "0.2.2", default-features = false, optional = true }
+chrono = { version = "0.4.33", default-features = false }
 serde = { version = "1.0", default-features = false, features = [
 	"alloc",
 	"derive",
@@ -45,12 +45,12 @@ sha2 = { version = "0.10", default-features = false }
 
 # Private dependencies (not exposed in the public API).
 lazy_static = { version = "1.4", optional = true }
-smallvec = "^1.8.0"
-subtle = { version = "2.4.0", default-features = false }
-zeroize = { version = "^1.4.3", features = ["zeroize_derive"] }
+smallvec = "^1.13.0"
+subtle = { version = "2.5.0", default-features = false }
+zeroize = { version = "^1.7.0", features = ["zeroize_derive"] }
 
 # Crypto backends (all public dependencies).
-secp256k1 = { version = "0.28", optional = true }
+secp256k1 = { version = "0.28.1", optional = true }
 parity-scale-codec = { version = "3", default-features = false, features = [
 	"derive",
 ] }
@@ -59,13 +59,13 @@ scale-info = { version = "2.10.0", default-features = false, features = [
 ] }
 
 [dependencies.k256]
-version = "0.13.2"
+version = "0.13.3"
 default-features = false
 features = ["ecdsa"]
 optional = true
 
 [dependencies.p256]
-version = "0.13.0"
+version = "0.13.2"
 default-features = false
 features = ["ecdsa"]
 optional = true
@@ -82,12 +82,12 @@ optional = true
 default-features = false
 
 [dependencies.ed25519-compact]
-version = "2.0.4"
+version = "2.0.6"
 optional = true
 default-features = false
 
 [dependencies.rsa]
-version = "0.9"
+version = "0.9.6"
 optional = true
 default-features = false
 
