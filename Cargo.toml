@@ -104,25 +104,27 @@ version-sync = "0.9"
 rand = "0.8.3"
 
 [features]
-default = ["std", "clock", "ciborium"]
+default = [ "ciborium", "clock", "std" ]
 # Enables `std`-specific functionality (such as error types implementing
 # the standard `Error` trait).
 std = [
 	"anyhow/std",
-	"serde_json/std",
 	"ciborium?/std",
+	"parity-scale-codec/std",
 	"rand_core/std",
+	"scale-info/std",
+	"serde_json/std",
 ]
 # Enables getting the current time using `Utc::now()` from `chrono`.
 # Without it, some `TimeOptions` constructors, such as the `Default` impl,
 # are not available. It is still possible to create `TimeOptions`
 # with an excplicitly specified clock function, or to set / verify
 # time-related `Claims` fields manually.
-clock = ["chrono/clock"]
+clock = [ "chrono/clock" ]
 # `secp256k1` crypto backend; `lazy_static` is required for internal initialization.
-es256k = ["secp256k1", "lazy_static"]
+es256k = [ "lazy_static", "secp256k1" ]
 # RSA algorithm and its dependencies (currently, `getrandom`-based RNG).
-rsa = ["dep:rsa", "rand_core/getrandom", "sha2/oid"]
+rsa = [ "dep:rsa", "rand_core/getrandom", "sha2/oid" ]
 
 [[bench]]
 name = "encoding"
