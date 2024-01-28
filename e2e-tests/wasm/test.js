@@ -14,12 +14,21 @@ const {
   createEs256kToken,
   verifyEs256Token,
   createEs256Token,
+  createUntrustedToken
 } = require('jwt-compact-wasm');
 
 const payload = {
   name: 'John Doe',
   admin: false,
 };
+
+async function createJWT(payload, privateKey, algorithm) {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: algorithm })
+    .setExpirationTime('1h')
+    .setSubject('john.doe@example.com')
+    .sign(privateKey);
+}
 
 async function assertRoundTrip({
   algorithm,
@@ -30,12 +39,7 @@ async function assertRoundTrip({
   console.log(`Verifying ${algorithm} (JS -> WASM)...`);
 
   const { privateKey, publicKey } = await keyGenerator();
-  const token = await new SignJWT(payload)
-    .setProtectedHeader({ alg: algorithm })
-    .setExpirationTime('1h')
-    .setSubject('john.doe@example.com')
-    .sign(privateKey);
-
+  const token = await createJWT(payload, privateKey, algorithm)
   const claims = verifier(token, await exportJWK(publicKey));
   assert.deepEqual(claims, { sub: 'john.doe@example.com', ...payload });
 
@@ -48,6 +52,13 @@ async function assertRoundTrip({
 }
 
 async function iteration() {
+  // Untrusted token.
+  const { privateKey, _publicKey } = await generateKeyPair('EdDSA', { crv: 'Ed25519' });
+  const algorithm = 'EdDSA';
+  const token = await createJWT(payload, privateKey, algorithm);
+  const ut = await createUntrustedToken(token);
+  console.log(`Untrusted token: ${JSON.stringify(ut)}`);
+
   // RSA algorithms.
   for (const algorithm of ['RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512']) {
     await assertRoundTrip({

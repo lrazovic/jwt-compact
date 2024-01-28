@@ -90,6 +90,12 @@ where
 	Ok(token)
 }
 
+#[wasm_bindgen(js_name = "createUntrustedToken")]
+pub fn create_untrusted_token(token: &str) -> Result<JsValue, JsValue> {
+	let token = UntrustedToken::new(token).map_err(to_js_error)?;
+	Ok(from_serde(&token).expect("Cannot serialize claims"))
+}
+
 #[wasm_bindgen(js_name = "verifyHashToken")]
 pub fn verify_hash_token(token: &str, secret_key: &JsValue) -> Result<JsValue, JsValue> {
 	let token = UntrustedToken::new(token).map_err(to_js_error)?;
