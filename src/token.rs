@@ -248,8 +248,8 @@ impl Header {
 
 impl<T> Header<T> {
 	/// Creates a header with the specified custom fields.
-	pub const fn new(fields: T) -> Header<T> {
-		Header {
+	pub const fn new(fields: T) -> Self {
+		Self {
 			key_set_url: None,
 			key_id: None,
 			certificate_url: None,
@@ -304,7 +304,7 @@ impl<T> Header<T> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq)]
-pub(crate) struct CompleteHeader<'a, T> {
+pub struct CompleteHeader<'a, T> {
 	#[serde(rename = "alg")]
 	pub algorithm: Cow<'a, str>,
 	#[serde(rename = "cty", default, skip_serializing_if = "Option::is_none")]
@@ -393,17 +393,17 @@ pub struct Token<T, H = Empty> {
 }
 
 impl<T, H> Token<T, H> {
-	pub(crate) fn new(header: Header<H>, claims: Claims<T>) -> Self {
+	pub(crate) const fn new(header: Header<H>, claims: Claims<T>) -> Self {
 		Self { header, claims }
 	}
 
 	/// Gets token header.
-	pub fn header(&self) -> &Header<H> {
+	pub const fn header(&self) -> &Header<H> {
 		&self.header
 	}
 
 	/// Gets token claims.
-	pub fn claims(&self) -> &Claims<T> {
+	pub const fn claims(&self) -> &Claims<T> {
 		&self.claims
 	}
 
@@ -535,8 +535,8 @@ impl<'a> UntrustedToken {
 
 impl<H> UntrustedToken<H> {
 	/// Converts this token to an owned form.
-	pub fn into_owned(self) -> UntrustedToken<H> {
-		UntrustedToken {
+	pub fn into_owned(self) -> Self {
+		Self {
 			signed_data: self.signed_data,
 			header: self.header,
 			algorithm: self.algorithm,
@@ -547,7 +547,7 @@ impl<H> UntrustedToken<H> {
 	}
 
 	/// Gets the token header.
-	pub fn header(&self) -> &Header<H> {
+	pub const fn header(&self) -> &Header<H> {
 		&self.header
 	}
 

@@ -68,12 +68,12 @@ where
 pub struct SecretBytes<'a>(Cow<'a, [u8]>);
 
 impl<'a> SecretBytes<'a> {
-	pub(crate) fn new(inner: Cow<'a, [u8]>) -> Self {
+	pub(crate) const fn new(inner: Cow<'a, [u8]>) -> Self {
 		Self(inner)
 	}
 
 	/// Creates secret bytes from a borrowed slice.
-	pub fn borrowed(bytes: &'a [u8]) -> Self {
+	pub const fn borrowed(bytes: &'a [u8]) -> Self {
 		Self(Cow::Borrowed(bytes))
 	}
 

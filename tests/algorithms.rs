@@ -45,7 +45,7 @@ fn short_hs256_key_cannot_be_checked() {
 	const KEY: &[u8] = b"your-256-bit-secret";
 
 	let key = Hs384Key::from(KEY);
-	assert!(StrongKey::try_from(key).is_err());
+	StrongKey::try_from(key).unwrap_err();
 }
 
 #[test]
@@ -238,7 +238,7 @@ fn wso2_reference() {
 	);
 	let claims = token.deserialize_claims_unchecked::<Obj>().unwrap();
 
-	let exp = Utc.timestamp_opt(1452594892, 0).unwrap();
+	let exp = Utc.timestamp_opt(1_452_594_892, 0).unwrap();
 	assert_eq!(claims.expiration, Some(exp));
 	assert_eq!(claims.custom["sub"], "admin@carbon.super");
 	assert_eq!(claims.custom["http://wso2.org/claims/organization"], "WSO2");
@@ -450,7 +450,7 @@ fn test_algorithm_with_custom_header<A: Algorithm>(
 	let mangled_header = Base64UrlUnpadded::encode_string(mangled_header.as_bytes());
 	let header_end = token_string.find('.').unwrap();
 	assert_ne!(mangled_header, &token_string[..header_end]);
-	let mut mangled_str = token_string.clone();
+	let mut mangled_str = token_string;
 	mangled_str.replace_range(..header_end, &mangled_header);
 	let token = UntrustedToken::new(&mangled_str).unwrap();
 	let err = algorithm.validator::<Obj>(verifying_key).validate(&token).unwrap_err();

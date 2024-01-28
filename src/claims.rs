@@ -36,7 +36,7 @@ pub struct TimeOptions<F = fn() -> DateTime<Utc>> {
 
 impl<F: Fn() -> DateTime<Utc>> TimeOptions<F> {
 	/// Creates options based on the specified time leeway and clock function.
-	pub fn new(leeway: Duration, clock_fn: F) -> Self {
+	pub const fn new(leeway: Duration, clock_fn: F) -> Self {
 		Self { leeway, clock_fn }
 	}
 }
@@ -93,14 +93,14 @@ pub struct Claims<T> {
 
 impl Claims<Empty> {
 	/// Creates an empty claims instance.
-	pub fn empty() -> Self {
+	pub const fn empty() -> Self {
 		Self { expiration: None, not_before: None, issued_at: None, custom: Empty {} }
 	}
 }
 
 impl<T> Claims<T> {
 	/// Creates a new instance with the provided custom claims.
-	pub fn new(custom_claims: T) -> Self {
+	pub const fn new(custom_claims: T) -> Self {
 		Self { expiration: None, not_before: None, issued_at: None, custom: custom_claims }
 	}
 

@@ -258,7 +258,7 @@ pub enum JsonWebKey<'a> {
 
 impl JsonWebKey<'_> {
 	/// Gets the type of this key.
-	pub fn key_type(&self) -> KeyType {
+	pub const fn key_type(&self) -> KeyType {
 		match self {
 			Self::Rsa { .. } => KeyType::Rsa,
 			Self::EllipticCurve { .. } => KeyType::EllipticCurve,
@@ -268,7 +268,7 @@ impl JsonWebKey<'_> {
 	}
 
 	/// Returns `true` if this key can be used for signing (has [`SecretBytes`] fields).
-	pub fn is_signing_key(&self) -> bool {
+	pub const fn is_signing_key(&self) -> bool {
 		match self {
 			Self::Rsa { private_parts, .. } => private_parts.is_some(),
 			Self::EllipticCurve { secret, .. } | Self::KeyPair { secret, .. } => secret.is_some(),
@@ -508,7 +508,7 @@ mod tests {
 
 	use assert_matches::assert_matches;
 
-	fn create_jwk() -> JsonWebKey<'static> {
+	const fn create_jwk() -> JsonWebKey<'static> {
 		JsonWebKey::KeyPair { curve: Cow::Borrowed("Ed25519"), x: Cow::Borrowed(b"test"), secret: None }
 	}
 

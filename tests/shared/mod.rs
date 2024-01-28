@@ -11,7 +11,7 @@ use jwt_compact::{prelude::*, Algorithm, ValidationError};
 
 pub type Obj = serde_json::Map<String, serde_json::Value>;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SampleClaims {
 	#[serde(rename = "sub")]
 	pub subject: String,
@@ -20,7 +20,7 @@ pub struct SampleClaims {
 	pub admin: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CompactClaims {
 	/// We use a public claim (https://tools.ietf.org/html/rfc7519#section-4.1.2)
 	/// with a custom (de)serializer. This allows to store the `subject` efficiently

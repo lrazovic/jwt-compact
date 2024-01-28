@@ -7,9 +7,9 @@ use core::fmt;
 use crate::alloc::String;
 
 #[cfg(feature = "ciborium")]
-pub(crate) type CborDeError<E = anyhow::Error> = ciborium::de::Error<E>;
+pub type CborDeError<E = anyhow::Error> = ciborium::de::Error<E>;
 #[cfg(feature = "ciborium")]
-pub(crate) type CborSerError<E = Infallible> = ciborium::ser::Error<E>;
+pub type CborSerError<E = Infallible> = ciborium::ser::Error<E>;
 
 /// Errors that may occur during token parsing.
 #[derive(Debug)]
