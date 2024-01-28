@@ -20,7 +20,7 @@ use crate::{
 };
 
 /// Maximum "reasonable" signature size in bytes.
-const SIGNATURE_SIZE: usize = 128;
+const SIGNATURE_SIZE: usize = 256;
 
 /// Representation of a X.509 certificate thumbprint (`x5t` and `x5t#S256` fields in
 /// the JWT [`Header`]).
@@ -313,7 +313,7 @@ pub struct CompleteHeader<'a, T> {
 	pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen, Serialize)]
 enum ContentType {
 	Json,
 	#[cfg(feature = "ciborium")]
@@ -367,7 +367,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize)]
 pub struct UntrustedToken<H = Empty> {
 	// TODO: Find a reasonable upper bound for the signed data size.
 	pub(crate) signed_data: BoundedVec<u8, ConstU32<768>>,
@@ -378,8 +378,8 @@ pub struct UntrustedToken<H = Empty> {
 	// TODO: Find a reasonable upper bound for the claims size.
 	serialized_claims: BoundedVec<u8, ConstU32<512>>,
 	/// SIGNATURE_SIZE is the maximum size of a signature.
-	/// SIGNATURE_SIZE === 128
-	signature: BoundedVec<u8, ConstU32<128>>,
+	/// SIGNATURE_SIZE === 256
+	signature: BoundedVec<u8, ConstU32<256>>,
 }
 
 /// Token with validated integrity.
