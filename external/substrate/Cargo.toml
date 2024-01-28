@@ -23,5 +23,5 @@ jwt-compact = { path = "../..", default-features = false, features = ["ed25519-c
 substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk/", branch = "release-polkadot-v1.4.0", optional = true }
 
 [features]
-default = ["std"]
-std = ["frame-support/std", "substrate-wasm-builder", "jwt-compact/std"]
+default = [ "std" ]
+std = [ "frame-support/std", "jwt-compact/std", "substrate-wasm-builder" ]
