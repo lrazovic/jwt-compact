@@ -135,7 +135,7 @@ clock = ["chrono/clock"]
 # `secp256k1` crypto backend; `lazy_static` is required for internal initialization.
 es256k = ["secp256k1", "lazy_static"]
 # RSA algorithm and its dependencies (currently, `getrandom`-based RNG).
-rsa = ["dep:rsa", "sha2/oid"]
+rsa = ["dep:rsa", "rand_core/getrandom", "sha2/oid"]
 
 [[bench]]
 name = "encoding"

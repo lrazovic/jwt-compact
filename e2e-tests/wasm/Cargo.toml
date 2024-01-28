@@ -37,6 +37,9 @@ std = [
 	"serde_json/std"
 ]
 clock = []
-es256k = []
+es256k = [
+	"jwt-compact/es256k"
+]
 rsa = []
 ciborium = []
+ed25519-compact = []

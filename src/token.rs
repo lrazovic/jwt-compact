@@ -504,7 +504,8 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
                 let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
                     .map_err(|_| ParseError::InvalidBase64Encoding)?;
 
-                let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> = smallvec![0; 3 * (signature.len() + 3) / 4];
+                let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> =
+                    smallvec![0; 3 * (signature.len() + 3) / 4];
                 let signature_len =
                     Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
                         .map_err(|_| ParseError::InvalidBase64Encoding)?

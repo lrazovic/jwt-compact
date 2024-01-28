@@ -48,5 +48,8 @@ std = [
 	"serde/std"
 ]
 clock = []
-es256k = []
+es256k = [
+	"jwt-compact/es256k"
+]
 ciborium = []
+ed25519-compact = []

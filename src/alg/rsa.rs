@@ -17,6 +17,7 @@ use crate::{
     jwk::{JsonWebKey, JwkError, KeyType, RsaPrimeFactor, RsaPrivateParts},
     Algorithm, AlgorithmSignature,
 };
+use scale_info::prelude::boxed::Box;
 
 /// RSA signature.
 #[derive(Debug)]
@@ -174,7 +175,17 @@ impl Algorithm for Rsa {
     }
 
     fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        unimplemented!();
+        let digest = self.hash_alg.digest(message);
+        let digest = digest.as_ref();
+        let signing_result = match self.padding_scheme() {
+            PaddingScheme::Pkcs1v15(padding) => {
+                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, digest)
+            }
+            PaddingScheme::Pss(padding) => {
+                signing_key.sign_with_rng(&mut rand_core::OsRng, padding, digest)
+            }
+        };
+        RsaSignature(signing_result.expect("Unexpected RSA signature failure"))
     }
 
     fn verify_signature(
@@ -272,13 +283,15 @@ impl Rsa {
         }
     }
 
-    // Generates a new key pair with the specified modulus bit length (aka key length).
-    // pub fn generate<R: CryptoRng + RngCore>(
-    //     rng: &mut R,
-    //     modulus_bits: ModulusBits,
-    // ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
-    //     unimplemented!()
-    // }
+    /// Generates a new key pair with the specified modulus bit length (aka key length).
+    pub fn generate<R: CryptoRng + RngCore>(
+        rng: &mut R,
+        modulus_bits: ModulusBits,
+    ) -> rsa::errors::Result<(StrongKey<RsaPrivateKey>, StrongKey<RsaPublicKey>)> {
+        let signing_key = RsaPrivateKey::new(rng, modulus_bits.bits())?;
+        let verifying_key = signing_key.to_public_key();
+        Ok((StrongKey(signing_key), StrongKey(verifying_key)))
+    }
 }
 
 impl FromStr for Rsa {

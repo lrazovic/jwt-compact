@@ -6,7 +6,7 @@ use sha2::{
     digest::{core_api::BlockSizeUser, OutputSizeUser},
     Sha256, Sha384, Sha512,
 };
-use smallvec::{smallvec, SmallVec};
+use smallvec::SmallVec;
 use zeroize::Zeroize;
 
 use core::{fmt, num::NonZeroUsize};
@@ -20,6 +20,8 @@ use crate::{
 
 #[cfg(feature = "std")]
 use rand_core::{CryptoRng, RngCore};
+#[cfg(feature = "std")]
+use smallvec::smallvec;
 
 macro_rules! define_hmac_signature {
     (
