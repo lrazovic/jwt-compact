@@ -34,8 +34,6 @@ pub use self::eddsa_dalek::Ed25519;
 pub use self::eddsa_sodium::Ed25519;
 #[cfg(feature = "es256k")]
 pub use self::es256k::Es256k;
-pub use self::generic::{SecretBytes, SigningKey, VerifyingKey};
-pub use self::hmacs::*;
 #[cfg(feature = "k256")]
 pub use self::k256::Es256k;
 #[cfg(feature = "p256")]
@@ -43,8 +41,11 @@ pub use self::p256::Es256;
 #[cfg(feature = "rsa")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rsa")))]
 pub use self::rsa::{
-    ModulusBits, ModulusBitsError, Rsa, RsaError, RsaParseError, RsaPrivateKey, RsaPublicKey,
-    RsaSignature,
+	ModulusBits, ModulusBitsError, Rsa, RsaError, RsaParseError, RsaPrivateKey, RsaPublicKey, RsaSignature,
+};
+pub use self::{
+	generic::{SecretBytes, SigningKey, VerifyingKey},
+	hmacs::*,
 };
 
 /// Wrapper around keys allowing to enforce key strength requirements.
@@ -70,16 +71,16 @@ pub use self::rsa::{
 pub struct StrongKey<T>(T);
 
 impl<T> StrongKey<T> {
-    /// Returns the wrapped value.
-    pub fn into_inner(self) -> T {
-        self.0
-    }
+	/// Returns the wrapped value.
+	pub fn into_inner(self) -> T {
+		self.0
+	}
 }
 
 impl<T> AsRef<T> for StrongKey<T> {
-    fn as_ref(&self) -> &T {
-        &self.0
-    }
+	fn as_ref(&self) -> &T {
+		&self.0
+	}
 }
 
 /// Error type used for fallible conversion into a [`StrongKey`].
@@ -89,9 +90,9 @@ impl<T> AsRef<T> for StrongKey<T> {
 pub struct WeakKeyError<T>(pub T);
 
 impl<T> fmt::Display for WeakKeyError<T> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str("Weak cryptographic key")
-    }
+	fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+		formatter.write_str("Weak cryptographic key")
+	}
 }
 
 #[cfg(feature = "std")]
@@ -126,28 +127,27 @@ pub struct StrongAlg<T>(pub T);
 #[allow(clippy::trait_duplication_in_bounds)] // false positive
 impl<T: Algorithm> Algorithm for StrongAlg<T>
 where
-    StrongKey<T::SigningKey>: TryFrom<T::SigningKey>,
-    StrongKey<T::VerifyingKey>: TryFrom<T::VerifyingKey>,
+	StrongKey<T::SigningKey>: TryFrom<T::SigningKey>,
+	StrongKey<T::VerifyingKey>: TryFrom<T::VerifyingKey>,
 {
-    type SigningKey = StrongKey<T::SigningKey>;
-    type VerifyingKey = StrongKey<T::VerifyingKey>;
-    type Signature = T::Signature;
+	type Signature = T::Signature;
+	type SigningKey = StrongKey<T::SigningKey>;
+	type VerifyingKey = StrongKey<T::VerifyingKey>;
 
-    fn name(&self) -> Cow<'static, str> {
-        self.0.name()
-    }
+	fn name(&self) -> Cow<'static, str> {
+		self.0.name()
+	}
 
-    fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        self.0.sign(&signing_key.0, message)
-    }
+	fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
+		self.0.sign(&signing_key.0, message)
+	}
 
-    fn verify_signature(
-        &self,
-        signature: &Self::Signature,
-        verifying_key: &Self::VerifyingKey,
-        message: &[u8],
-    ) -> bool {
-        self.0
-            .verify_signature(signature, &verifying_key.0, message)
-    }
+	fn verify_signature(
+		&self,
+		signature: &Self::Signature,
+		verifying_key: &Self::VerifyingKey,
+		message: &[u8],
+	) -> bool {
+		self.0.verify_signature(signature, &verifying_key.0, message)
+	}
 }

@@ -1,10 +1,15 @@
 //! JWT algorithms based on HMACs.
 
-use hmac::digest::generic_array::{typenum::Unsigned, GenericArray};
-use hmac::{digest::CtOutput, Hmac, Mac as _};
+use hmac::{
+	digest::{
+		generic_array::{typenum::Unsigned, GenericArray},
+		CtOutput,
+	},
+	Hmac, Mac as _,
+};
 use sha2::{
-    digest::{core_api::BlockSizeUser, OutputSizeUser},
-    Sha256, Sha384, Sha512,
+	digest::{core_api::BlockSizeUser, OutputSizeUser},
+	Sha256, Sha384, Sha512,
 };
 use smallvec::SmallVec;
 use zeroize::Zeroize;
@@ -12,10 +17,10 @@ use zeroize::Zeroize;
 use core::{fmt, num::NonZeroUsize};
 
 use crate::{
-    alg::{SecretBytes, SigningKey, StrongKey, VerifyingKey, WeakKeyError},
-    alloc::Cow,
-    jwk::{JsonWebKey, JwkError, KeyType},
-    Algorithm, AlgorithmSignature,
+	alg::{SecretBytes, SigningKey, StrongKey, VerifyingKey, WeakKeyError},
+	alloc::Cow,
+	jwk::{JsonWebKey, JwkError, KeyType},
+	Algorithm, AlgorithmSignature,
 };
 
 #[cfg(feature = "std")]
@@ -55,16 +60,16 @@ macro_rules! define_hmac_signature {
 }
 
 define_hmac_signature!(
-    /// Signature produced by the [`Hs256`] algorithm.
-    struct Hs256Signature<Sha256>;
+	/// Signature produced by the [`Hs256`] algorithm.
+	struct Hs256Signature<Sha256>;
 );
 define_hmac_signature!(
-    /// Signature produced by the [`Hs384`] algorithm.
-    struct Hs384Signature<Sha384>;
+	/// Signature produced by the [`Hs384`] algorithm.
+	struct Hs384Signature<Sha384>;
 );
 define_hmac_signature!(
-    /// Signature produced by the [`Hs512`] algorithm.
-    struct Hs512Signature<Sha512>;
+	/// Signature produced by the [`Hs512`] algorithm.
+	struct Hs512Signature<Sha512>;
 );
 
 macro_rules! define_hmac_key {
@@ -139,16 +144,16 @@ macro_rules! define_hmac_key {
 }
 
 define_hmac_key! {
-    /// Signing / verifying key for `HS256` algorithm. Zeroed on drop.
-    struct Hs256Key<Sha256>([u8; 64]);
+	/// Signing / verifying key for `HS256` algorithm. Zeroed on drop.
+	struct Hs256Key<Sha256>([u8; 64]);
 }
 define_hmac_key! {
-    /// Signing / verifying key for `HS384` algorithm. Zeroed on drop.
-    struct Hs384Key<Sha384>([u8; 128]);
+	/// Signing / verifying key for `HS384` algorithm. Zeroed on drop.
+	struct Hs384Key<Sha384>([u8; 128]);
 }
 define_hmac_key! {
-    /// Signing / verifying key for `HS512` algorithm. Zeroed on drop.
-    struct Hs512Key<Sha512>([u8; 128]);
+	/// Signing / verifying key for `HS512` algorithm. Zeroed on drop.
+	struct Hs512Key<Sha512>([u8; 128]);
 }
 
 /// `HS256` signing algorithm.
@@ -160,26 +165,26 @@ define_hmac_key! {
 pub struct Hs256;
 
 impl Algorithm for Hs256 {
-    type SigningKey = Hs256Key;
-    type VerifyingKey = Hs256Key;
-    type Signature = Hs256Signature;
+	type Signature = Hs256Signature;
+	type SigningKey = Hs256Key;
+	type VerifyingKey = Hs256Key;
 
-    fn name(&self) -> Cow<'static, str> {
-        Cow::Borrowed("HS256")
-    }
+	fn name(&self) -> Cow<'static, str> {
+		Cow::Borrowed("HS256")
+	}
 
-    fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        Hs256Signature(signing_key.hmac(message))
-    }
+	fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
+		Hs256Signature(signing_key.hmac(message))
+	}
 
-    fn verify_signature(
-        &self,
-        signature: &Self::Signature,
-        verifying_key: &Self::VerifyingKey,
-        message: &[u8],
-    ) -> bool {
-        verifying_key.hmac(message) == signature.0
-    }
+	fn verify_signature(
+		&self,
+		signature: &Self::Signature,
+		verifying_key: &Self::VerifyingKey,
+		message: &[u8],
+	) -> bool {
+		verifying_key.hmac(message) == signature.0
+	}
 }
 
 /// `HS384` signing algorithm.
@@ -191,26 +196,26 @@ impl Algorithm for Hs256 {
 pub struct Hs384;
 
 impl Algorithm for Hs384 {
-    type SigningKey = Hs384Key;
-    type VerifyingKey = Hs384Key;
-    type Signature = Hs384Signature;
+	type Signature = Hs384Signature;
+	type SigningKey = Hs384Key;
+	type VerifyingKey = Hs384Key;
 
-    fn name(&self) -> Cow<'static, str> {
-        Cow::Borrowed("HS384")
-    }
+	fn name(&self) -> Cow<'static, str> {
+		Cow::Borrowed("HS384")
+	}
 
-    fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        Hs384Signature(signing_key.hmac(message))
-    }
+	fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
+		Hs384Signature(signing_key.hmac(message))
+	}
 
-    fn verify_signature(
-        &self,
-        signature: &Self::Signature,
-        verifying_key: &Self::VerifyingKey,
-        message: &[u8],
-    ) -> bool {
-        verifying_key.hmac(message) == signature.0
-    }
+	fn verify_signature(
+		&self,
+		signature: &Self::Signature,
+		verifying_key: &Self::VerifyingKey,
+		message: &[u8],
+	) -> bool {
+		verifying_key.hmac(message) == signature.0
+	}
 }
 
 /// `HS512` signing algorithm.
@@ -222,73 +227,71 @@ impl Algorithm for Hs384 {
 pub struct Hs512;
 
 impl Algorithm for Hs512 {
-    type SigningKey = Hs512Key;
-    type VerifyingKey = Hs512Key;
-    type Signature = Hs512Signature;
+	type Signature = Hs512Signature;
+	type SigningKey = Hs512Key;
+	type VerifyingKey = Hs512Key;
 
-    fn name(&self) -> Cow<'static, str> {
-        Cow::Borrowed("HS512")
-    }
+	fn name(&self) -> Cow<'static, str> {
+		Cow::Borrowed("HS512")
+	}
 
-    fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
-        Hs512Signature(signing_key.hmac(message))
-    }
+	fn sign(&self, signing_key: &Self::SigningKey, message: &[u8]) -> Self::Signature {
+		Hs512Signature(signing_key.hmac(message))
+	}
 
-    fn verify_signature(
-        &self,
-        signature: &Self::Signature,
-        verifying_key: &Self::VerifyingKey,
-        message: &[u8],
-    ) -> bool {
-        verifying_key.hmac(message) == signature.0
-    }
+	fn verify_signature(
+		&self,
+		signature: &Self::Signature,
+		verifying_key: &Self::VerifyingKey,
+		message: &[u8],
+	) -> bool {
+		verifying_key.hmac(message) == signature.0
+	}
 }
 
 macro_rules! impl_key_traits {
-    ($key:ident<$alg:ident>) => {
-        impl SigningKey<$alg> for $key {
-            fn from_slice(raw: &[u8]) -> anyhow::Result<Self> {
-                Ok(Self::from(raw))
-            }
+	($key:ident<$alg:ident>) => {
+		impl SigningKey<$alg> for $key {
+			fn from_slice(raw: &[u8]) -> anyhow::Result<Self> {
+				Ok(Self::from(raw))
+			}
 
-            fn to_verifying_key(&self) -> Self {
-                self.clone()
-            }
+			fn to_verifying_key(&self) -> Self {
+				self.clone()
+			}
 
-            fn as_bytes(&self) -> SecretBytes<'_> {
-                SecretBytes::borrowed(self.as_ref())
-            }
-        }
+			fn as_bytes(&self) -> SecretBytes<'_> {
+				SecretBytes::borrowed(self.as_ref())
+			}
+		}
 
-        impl VerifyingKey<$alg> for $key {
-            fn from_slice(raw: &[u8]) -> anyhow::Result<Self> {
-                Ok(Self::from(raw))
-            }
+		impl VerifyingKey<$alg> for $key {
+			fn from_slice(raw: &[u8]) -> anyhow::Result<Self> {
+				Ok(Self::from(raw))
+			}
 
-            fn as_bytes(&self) -> Cow<'_, [u8]> {
-                Cow::Borrowed(self.as_ref())
-            }
-        }
+			fn as_bytes(&self) -> Cow<'_, [u8]> {
+				Cow::Borrowed(self.as_ref())
+			}
+		}
 
-        impl<'a> From<&'a $key> for JsonWebKey<'a> {
-            fn from(key: &'a $key) -> JsonWebKey<'a> {
-                JsonWebKey::Symmetric {
-                    secret: SecretBytes::borrowed(key.as_ref()),
-                }
-            }
-        }
+		impl<'a> From<&'a $key> for JsonWebKey<'a> {
+			fn from(key: &'a $key) -> JsonWebKey<'a> {
+				JsonWebKey::Symmetric { secret: SecretBytes::borrowed(key.as_ref()) }
+			}
+		}
 
-        impl TryFrom<&JsonWebKey<'_>> for $key {
-            type Error = JwkError;
+		impl TryFrom<&JsonWebKey<'_>> for $key {
+			type Error = JwkError;
 
-            fn try_from(jwk: &JsonWebKey<'_>) -> Result<Self, Self::Error> {
-                match jwk {
-                    JsonWebKey::Symmetric { secret } => Ok(Self::new(secret)),
-                    _ => Err(JwkError::key_type(jwk, KeyType::Symmetric)),
-                }
-            }
-        }
-    };
+			fn try_from(jwk: &JsonWebKey<'_>) -> Result<Self, Self::Error> {
+				match jwk {
+					JsonWebKey::Symmetric { secret } => Ok(Self::new(secret)),
+					_ => Err(JwkError::key_type(jwk, KeyType::Symmetric)),
+				}
+			}
+		}
+	};
 }
 
 impl_key_traits!(Hs256Key<Hs256>);

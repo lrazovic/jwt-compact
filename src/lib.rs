@@ -229,11 +229,7 @@
 // Linter settings.
 #![warn(missing_debug_implementations, missing_docs, bare_trait_objects)]
 #![warn(clippy::all, clippy::pedantic)]
-#![allow(
-    clippy::missing_errors_doc,
-    clippy::must_use_candidate,
-    clippy::module_name_repetitions
-)]
+#![allow(clippy::missing_errors_doc, clippy::must_use_candidate, clippy::module_name_repetitions)]
 
 pub mod alg;
 mod claims;
@@ -244,28 +240,28 @@ mod traits;
 
 // Polyfill for `alloc` types.
 mod alloc {
-    #[cfg(not(feature = "std"))]
-    extern crate alloc as std;
+	#[cfg(not(feature = "std"))]
+	extern crate alloc as std;
 
-    pub use std::{
-        borrow::{Cow, ToOwned},
-        format,
-        string::{String, ToString},
-        vec::Vec,
-    };
+	pub use std::{
+		borrow::{Cow, ToOwned},
+		format,
+		string::{String, ToString},
+		vec::Vec,
+	};
 }
 
 /// Prelude to neatly import all necessary stuff from the crate.
 pub mod prelude {
-    #[doc(no_inline)]
-    pub use crate::{AlgorithmExt as _, Claims, Header, TimeOptions, Token, UntrustedToken};
+	#[doc(no_inline)]
+	pub use crate::{AlgorithmExt as _, Claims, Header, TimeOptions, Token, UntrustedToken};
 }
 
 pub use crate::{
-    claims::{Claims, Empty, TimeOptions},
-    error::{Claim, CreationError, ParseError, ValidationError},
-    token::{Header, SignedToken, Thumbprint, Token, UntrustedToken},
-    traits::{Algorithm, AlgorithmExt, AlgorithmSignature, Renamed, Validator},
+	claims::{Claims, Empty, TimeOptions},
+	error::{Claim, CreationError, ParseError, ValidationError},
+	token::{Header, SignedToken, Thumbprint, Token, UntrustedToken},
+	traits::{Algorithm, AlgorithmExt, AlgorithmSignature, Renamed, Validator},
 };
 
 #[cfg(doctest)]

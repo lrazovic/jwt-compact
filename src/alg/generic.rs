@@ -6,8 +6,8 @@ use zeroize::Zeroize;
 use core::{fmt, ops};
 
 use crate::{
-    alloc::{Cow, Vec},
-    Algorithm,
+	alloc::{Cow, Vec},
+	Algorithm,
 };
 
 /// Verifying key for a specific signature cryptosystem. In the case of public-key cryptosystems,
@@ -17,17 +17,17 @@ use crate::{
 /// of the same cryptosystem.
 pub trait VerifyingKey<T>: Sized
 where
-    T: Algorithm<VerifyingKey = Self>,
+	T: Algorithm<VerifyingKey = Self>,
 {
-    /// Creates a key from `raw` bytes. Returns an error if the bytes do not represent
-    /// a valid key.
-    fn from_slice(raw: &[u8]) -> anyhow::Result<Self>;
+	/// Creates a key from `raw` bytes. Returns an error if the bytes do not represent
+	/// a valid key.
+	fn from_slice(raw: &[u8]) -> anyhow::Result<Self>;
 
-    /// Returns the key as raw bytes.
-    ///
-    /// Implementations should return `Cow::Borrowed` whenever possible (that is, if the bytes
-    /// are actually stored within the implementing data structure).
-    fn as_bytes(&self) -> Cow<'_, [u8]>;
+	/// Returns the key as raw bytes.
+	///
+	/// Implementations should return `Cow::Borrowed` whenever possible (that is, if the bytes
+	/// are actually stored within the implementing data structure).
+	fn as_bytes(&self) -> Cow<'_, [u8]>;
 }
 
 /// Signing key for a specific signature cryptosystem. In the case of public-key cryptosystems,
@@ -37,20 +37,20 @@ where
 /// of the same cryptosystem.
 pub trait SigningKey<T>: Sized
 where
-    T: Algorithm<SigningKey = Self>,
+	T: Algorithm<SigningKey = Self>,
 {
-    /// Creates a key from `raw` bytes. Returns an error if the bytes do not represent
-    /// a valid key.
-    fn from_slice(raw: &[u8]) -> anyhow::Result<Self>;
+	/// Creates a key from `raw` bytes. Returns an error if the bytes do not represent
+	/// a valid key.
+	fn from_slice(raw: &[u8]) -> anyhow::Result<Self>;
 
-    /// Converts a signing key to a verification key.
-    fn to_verifying_key(&self) -> T::VerifyingKey;
+	/// Converts a signing key to a verification key.
+	fn to_verifying_key(&self) -> T::VerifyingKey;
 
-    /// Returns the key as raw bytes.
-    ///
-    /// Implementations should return `Cow::Borrowed` whenever possible (that is, if the bytes
-    /// are actually stored within the implementing data structure).
-    fn as_bytes(&self) -> SecretBytes<'_>;
+	/// Returns the key as raw bytes.
+	///
+	/// Implementations should return `Cow::Borrowed` whenever possible (that is, if the bytes
+	/// are actually stored within the implementing data structure).
+	fn as_bytes(&self) -> SecretBytes<'_>;
 }
 
 /// Generic container for secret bytes, which can be either owned or borrowed.
@@ -68,55 +68,52 @@ where
 pub struct SecretBytes<'a>(Cow<'a, [u8]>);
 
 impl<'a> SecretBytes<'a> {
-    pub(crate) fn new(inner: Cow<'a, [u8]>) -> Self {
-        Self(inner)
-    }
+	pub(crate) fn new(inner: Cow<'a, [u8]>) -> Self {
+		Self(inner)
+	}
 
-    /// Creates secret bytes from a borrowed slice.
-    pub fn borrowed(bytes: &'a [u8]) -> Self {
-        Self(Cow::Borrowed(bytes))
-    }
+	/// Creates secret bytes from a borrowed slice.
+	pub fn borrowed(bytes: &'a [u8]) -> Self {
+		Self(Cow::Borrowed(bytes))
+	}
 
-    /// Creates secret bytes from an owned `Vec`.
-    pub fn owned(bytes: Vec<u8>) -> Self {
-        Self(Cow::Owned(bytes))
-    }
+	/// Creates secret bytes from an owned `Vec`.
+	pub fn owned(bytes: Vec<u8>) -> Self {
+		Self(Cow::Owned(bytes))
+	}
 }
 
 impl fmt::Debug for SecretBytes<'_> {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct("SecretBytes")
-            .field("len", &self.0.len())
-            .finish()
-    }
+	fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+		formatter.debug_struct("SecretBytes").field("len", &self.0.len()).finish()
+	}
 }
 
 impl Drop for SecretBytes<'_> {
-    fn drop(&mut self) {
-        // if bytes are borrowed, we don't need to perform any special cleaning.
-        if let Cow::Owned(bytes) = &mut self.0 {
-            Zeroize::zeroize(bytes);
-        }
-    }
+	fn drop(&mut self) {
+		// if bytes are borrowed, we don't need to perform any special cleaning.
+		if let Cow::Owned(bytes) = &mut self.0 {
+			Zeroize::zeroize(bytes);
+		}
+	}
 }
 
 impl ops::Deref for SecretBytes<'_> {
-    type Target = [u8];
+	type Target = [u8];
 
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
 }
 
 impl AsRef<[u8]> for SecretBytes<'_> {
-    fn as_ref(&self) -> &[u8] {
-        self
-    }
+	fn as_ref(&self) -> &[u8] {
+		self
+	}
 }
 
 impl PartialEq for SecretBytes<'_> {
-    fn eq(&self, other: &Self) -> bool {
-        subtle::ConstantTimeEq::ct_eq(self.as_ref(), other.as_ref()).into()
-    }
+	fn eq(&self, other: &Self) -> bool {
+		subtle::ConstantTimeEq::ct_eq(self.as_ref(), other.as_ref()).into()
+	}
 }
