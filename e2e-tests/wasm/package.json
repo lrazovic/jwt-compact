@@ -1,14 +1,15 @@
 {
-  "name": "jwt-compact-wasm-test",
-  "version": "0.0.0",
+  "name": "jwt-compact-wasm",
+  "version": "0.0.1",
   "private": true,
   "license": "Apache-2.0",
   "collaborators": [
-    "Alex Ostrovski <ostrovski.alex@gmail.com>"
+    "Alex Ostrovski <ostrovski.alex@gmail.com>",
+    "Polimec Foundation <info@polimec.org>"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/slowli/jwt-compact"
+    "url": "https://github.com/lrazovic/jwt-compact"
   },
   "files": [
     "test.js"
@@ -18,7 +19,7 @@
     "test": "node test.js"
   },
   "dependencies": {
-    "jose": "^5.1.0",
+    "jose": "^5.2.0",
     "jwt-compact-wasm": "file:pkg"
   }
 }
