@@ -1,6 +1,6 @@
 {
   "name": "jwt-compact-wasm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "license": "Apache-2.0",
   "collaborators": [
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/lrazovic/jwt-compact"
+    "url": "git+https://github.com/lrazovic/jwt-compact.git"
   },
   "files": [
     "test.js"
