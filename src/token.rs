@@ -313,7 +313,7 @@ pub struct CompleteHeader<'a, T> {
 	pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen, Serialize, Deserialize)]
 enum ContentType {
 	Json,
 	#[cfg(feature = "ciborium")]
@@ -367,7 +367,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize, Deserialize)]
 pub struct UntrustedToken<H = Empty> {
 	// TODO: Find a reasonable upper bound for the signed data size.
 	pub(crate) signed_data: BoundedVec<u8, ConstU32<768>>,
@@ -386,7 +386,7 @@ pub struct UntrustedToken<H = Empty> {
 ///
 /// Claims encoded in the token can be verified by invoking [`Claims`] methods
 /// via [`Self::claims()`].
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, Decode, Encode, TypeInfo, Eq, PartialEq)]
 pub struct Token<T, H = Empty> {
 	header: Header<H>,
 	claims: Claims<T>,
@@ -447,7 +447,7 @@ impl<T, H> Token<T, H> {
 /// # } // end main()
 /// ```
 #[non_exhaustive]
-#[derive(Encode, Decode, MaxEncodedLen)]
+#[derive(Encode, Decode, MaxEncodedLen, Serialize, Deserialize)]
 pub struct SignedToken<A: Algorithm + ?Sized, T, H = Empty> {
 	/// Token signature.
 	pub signature: A::Signature,

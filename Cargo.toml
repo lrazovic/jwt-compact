@@ -8,6 +8,7 @@ authors = [
 	"Maximilian Münchow <github@maxmuen.de>",
 	"Eran Rundstein <eran@rundste.in>",
 	"Bruno Green",
+	"Polimec Foundation <info@polimec.org>",
 ]
 edition = "2021"
 rust-version = "1.65"
@@ -58,7 +59,9 @@ parity-scale-codec = { version = "3", default-features = false, features = [
 scale-info = { version = "2.10.0", default-features = false, features = [
 	"derive",
 ] }
-bounded-collections = { version = "0.1.9", default-features = false }
+bounded-collections = { version = "0.1.9", default-features = false, features = [
+	"serde",
+] }
 
 [dependencies.k256]
 version = "0.13.3"
