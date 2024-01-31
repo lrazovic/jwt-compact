@@ -8,7 +8,6 @@ use serde::{
 	de::{DeserializeOwned, Error as DeError, Visitor},
 	Deserialize, Deserializer, Serialize, Serializer,
 };
-use smallvec::{smallvec, SmallVec};
 
 use core::{cmp, fmt};
 
@@ -20,7 +19,7 @@ use crate::{
 };
 
 /// Maximum "reasonable" signature size in bytes.
-const SIGNATURE_SIZE: usize = 256;
+const SIGNATURE_SIZE: u32 = 256;
 
 /// Representation of a X.509 certificate thumbprint (`x5t` and `x5t#S256` fields in
 /// the JWT [`Header`]).
@@ -377,9 +376,7 @@ pub struct UntrustedToken<H = Empty> {
 	content_type: ContentType,
 	// TODO: Find a reasonable upper bound for the claims size.
 	serialized_claims: BoundedVec<u8, ConstU32<512>>,
-	/// SIGNATURE_SIZE is the maximum size of a signature.
-	/// SIGNATURE_SIZE === 256
-	signature: BoundedVec<u8, ConstU32<256>>,
+	signature: BoundedVec<u8, ConstU32<SIGNATURE_SIZE>>,
 }
 
 /// Token with validated integrity.
@@ -490,13 +487,16 @@ impl<'a, H: DeserializeOwned> TryFrom<&'a str> for UntrustedToken<H> {
 				let serialized_claims = Base64UrlUnpadded::decode_vec(claims)
 					.map_err(|_| ParseError::InvalidBase64Encoding)
 					.and_then(|claims| BoundedVec::try_from(claims).map_err(|_| ParseError::ClaimsTooLarge))?;
-				let mut decoded_signature: SmallVec<[u8; SIGNATURE_SIZE]> = smallvec![0; 3 * (signature.len() + 3) / 4];
-				let signature_len = Base64UrlUnpadded::decode(signature, &mut decoded_signature[..])
+				// Decode into a temporary Vec<u8>
+				let mut temp_buffer: Vec<u8> = vec![0; 3 * (signature.len() + 3) / 4];
+				let signature_len = Base64UrlUnpadded::decode(signature, &mut temp_buffer[..])
 					.map_err(|_| ParseError::InvalidBase64Encoding)?
 					.len();
-				decoded_signature.truncate(signature_len);
+				temp_buffer.truncate(signature_len);
+
+				// Convert the Vec<u8> into a BoundedVec<u8>
 				let bounded_decoded_signature =
-					BoundedVec::try_from(decoded_signature.to_vec()).map_err(|_| ParseError::SignatureTooLarge)?;
+					BoundedVec::try_from(temp_buffer).map_err(|_| ParseError::SignatureTooLarge)?;
 
 				let header: CompleteHeader<_> = serde_json::from_slice(&header).map_err(ParseError::MalformedHeader)?;
 				let content_type = match header.content_type {
@@ -569,8 +569,9 @@ impl<H> UntrustedToken<H> {
 		T: DeserializeOwned,
 	{
 		match self.content_type {
-			ContentType::Json =>
-				serde_json::from_slice(&self.serialized_claims).map_err(ValidationError::MalformedClaims),
+			ContentType::Json => {
+				serde_json::from_slice(&self.serialized_claims).map_err(ValidationError::MalformedClaims)
+			},
 
 			#[cfg(feature = "ciborium")]
 			ContentType::Cbor => {
