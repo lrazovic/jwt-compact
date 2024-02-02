@@ -129,17 +129,20 @@ impl fmt::Display for Claim {
 impl fmt::Display for ValidationError {
 	fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
-			Self::AlgorithmMismatch { expected, actual } =>
-				write!(formatter, "token algorithm ({actual}) differs from expected ({expected})"),
-			Self::InvalidSignatureLen { expected, actual } =>
-				write!(formatter, "invalid signature length: expected {expected} bytes, got {actual} bytes"),
+			Self::AlgorithmMismatch { expected, actual } => {
+				write!(formatter, "token algorithm ({actual}) differs from expected ({expected})")
+			},
+			Self::InvalidSignatureLen { expected, actual } => {
+				write!(formatter, "invalid signature length: expected {expected} bytes, got {actual} bytes")
+			},
 			Self::MalformedSignature(err) => write!(formatter, "malformed token signature: {err}"),
 			Self::InvalidSignature => formatter.write_str("signature has failed verification"),
 			Self::MalformedClaims(err) => write!(formatter, "cannot deserialize claims: {err}"),
 			#[cfg(feature = "ciborium")]
 			Self::MalformedCborClaims(err) => write!(formatter, "cannot deserialize claims: {err}"),
-			Self::NoClaim(claim) =>
-				write!(formatter, "claim `{claim}` requested during validation is not present in the token"),
+			Self::NoClaim(claim) => {
+				write!(formatter, "claim `{claim}` requested during validation is not present in the token")
+			},
 			Self::Expired => formatter.write_str("token has expired"),
 			Self::NotMature => formatter.write_str("token is not yet ready"),
 		}

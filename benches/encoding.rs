@@ -99,7 +99,7 @@ fn decoding_benches(criterion: &mut Criterion) {
 	criterion.bench_function("decoding/full", |bencher| {
 		bencher.iter(|| {
 			let token = UntrustedToken::new(&token).unwrap();
-			return Hs256.validator::<CustomClaims>(&key).validate(&token).unwrap()
+			return Hs256.validator::<CustomClaims>(&key).validate(&token).unwrap();
 		});
 	});
 }
