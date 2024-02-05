@@ -1059,12 +1059,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ed25519-compact"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a667e6426df16c2ac478efa4a439d0e674cba769c5556e8cf221739251640c8c"
-
-[[package]]
 name = "ed25519-dalek"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1768,7 +1762,7 @@ dependencies = [
  "bounded-collections",
  "chrono",
  "ciborium",
- "ed25519-compact",
+ "ed25519-dalek",
  "hmac 0.12.1",
  "parity-scale-codec",
  "rand_core 0.6.4",
