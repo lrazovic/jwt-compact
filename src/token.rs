@@ -375,7 +375,7 @@ pub struct UntrustedToken<H = Empty> {
 	algorithm: BoundedVec<u8, ConstU32<8>>,
 	content_type: ContentType,
 	// TODO: Find a reasonable upper bound for the claims size.
-	serialized_claims: BoundedVec<u8, ConstU32<512>>,
+	serialized_claims: BoundedVec<u8, ConstU32<768>>,
 	signature: BoundedVec<u8, ConstU32<SIGNATURE_SIZE>>,
 }
 
