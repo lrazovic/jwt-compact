@@ -88,6 +88,10 @@ pub struct Claims<T> {
 	#[serde(rename = "iat", default, skip_serializing_if = "Option::is_none", with = "self::serde_timestamp")]
 	pub issued_at: Option<DateTime<Utc>>,
 
+	#[cfg(feature = "mock")]
+	#[serde(rename = "iss", default)]
+	pub iss: u32,
+
 	/// Custom claims.
 	#[serde(flatten)]
 	pub custom: T,
@@ -95,15 +99,27 @@ pub struct Claims<T> {
 
 impl Claims<Empty> {
 	/// Creates an empty claims instance.
+	#[cfg(not(feature = "mock"))]
 	pub const fn empty() -> Self {
 		Self { expiration: None, not_before: None, issued_at: None, custom: Empty {} }
+	}
+
+	#[cfg(feature = "mock")]
+	pub const fn empty() -> Self {
+		Self { expiration: None, not_before: None, issued_at: None, custom: Empty {}, iss: 0 }
 	}
 }
 
 impl<T> Claims<T> {
 	/// Creates a new instance with the provided custom claims.
+	#[cfg(not(feature = "mock"))]
 	pub const fn new(custom_claims: T) -> Self {
 		Self { expiration: None, not_before: None, issued_at: None, custom: custom_claims }
+	}
+
+	#[cfg(feature = "mock")]
+	pub const fn new(custom_claims: T) -> Self {
+		Self { expiration: None, not_before: None, issued_at: None, custom: custom_claims, iss: 0 }
 	}
 
 	/// Sets the `expiration` claim so that the token has the specified `duration`.

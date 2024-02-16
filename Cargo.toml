@@ -130,6 +130,7 @@ clock = ["chrono/clock"]
 es256k = ["lazy_static", "secp256k1"]
 # RSA algorithm and its dependencies (currently, `getrandom`-based RNG).
 rsa = ["dep:rsa", "rand_core/getrandom", "sha2/oid"]
+mock = []
 
 [[bench]]
 name = "encoding"
