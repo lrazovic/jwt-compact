@@ -73,7 +73,7 @@ pub struct Empty {}
 /// due to a variety of data types they can be reasonably represented by.
 ///
 /// [JWT spec]: https://tools.ietf.org/html/rfc7519#section-4.1
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TypeInfo, Encode, Decode, MaxEncodedLen)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TypeInfo, Encode, Decode, MaxEncodedLen, Ord, PartialOrd)]
 #[non_exhaustive]
 pub struct Claims<T> {
 	/// Expiration time of the token.
