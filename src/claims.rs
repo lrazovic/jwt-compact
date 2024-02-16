@@ -73,20 +73,20 @@ pub struct Empty {}
 /// due to a variety of data types they can be reasonably represented by.
 ///
 /// [JWT spec]: https://tools.ietf.org/html/rfc7519#section-4.1
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TypeInfo, Encode, Decode, MaxEncodedLen, Ord, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Ord, PartialOrd)]
 #[non_exhaustive]
 pub struct Claims<T> {
 	/// Expiration time of the token.
-	#[serde(rename = "exp", default, skip_serializing_if = "Option::is_none")]
-	pub expiration: Option<u64>,
+	#[serde(rename = "exp", default, skip_serializing_if = "Option::is_none", with = "self::serde_timestamp")]
+	pub expiration: Option<DateTime<Utc>>,
 
 	/// Minimum time at which token is valid.
-	#[serde(rename = "nbf", default, skip_serializing_if = "Option::is_none")]
-	pub not_before: Option<u64>,
+	#[serde(rename = "nbf", default, skip_serializing_if = "Option::is_none", with = "self::serde_timestamp")]
+	pub not_before: Option<DateTime<Utc>>,
 
 	/// Time of token issuance.
-	#[serde(rename = "iat", default, skip_serializing_if = "Option::is_none")]
-	pub issued_at: Option<u64>,
+	#[serde(rename = "iat", default, skip_serializing_if = "Option::is_none", with = "self::serde_timestamp")]
+	pub issued_at: Option<DateTime<Utc>>,
 
 	/// Custom claims.
 	#[serde(flatten)]
@@ -113,8 +113,7 @@ impl<T> Claims<T> {
 	where
 		F: Fn() -> DateTime<Utc>,
 	{
-		let now = (options.clock_fn)() + duration;
-		Self { expiration: Some(now.timestamp() as u64), ..self }
+		Self { expiration: Some((options.clock_fn)() + duration), ..self }
 	}
 
 	/// Atomically sets `issued_at` and `expiration` claims: first to the current time
@@ -125,17 +124,13 @@ impl<T> Claims<T> {
 		F: Fn() -> DateTime<Utc>,
 	{
 		let issued_at = (options.clock_fn)();
-		Self {
-			expiration: Some((issued_at + duration).timestamp() as u64),
-			issued_at: Some(issued_at.timestamp() as u64),
-			..self
-		}
+		Self { expiration: Some(issued_at + duration), issued_at: Some(issued_at), ..self }
 	}
 
 	/// Sets the `nbf` claim.
 	#[must_use]
 	pub fn set_not_before(self, moment: DateTime<Utc>) -> Self {
-		Self { not_before: Some(moment.timestamp() as u64), ..self }
+		Self { not_before: Some(moment), ..self }
 	}
 
 	/// Validates the expiration claim.
@@ -147,10 +142,9 @@ impl<T> Claims<T> {
 		F: Fn() -> DateTime<Utc>,
 	{
 		self.expiration.map_or(Err(ValidationError::NoClaim(Claim::Expiration)), |expiration| {
-			let expiration_with_leeway = expiration
-				.checked_add_signed(options.leeway.num_seconds())
-				.unwrap_or(DateTime::<Utc>::MAX_UTC.timestamp() as u64);
-			if (options.clock_fn)().timestamp() as u64 > expiration_with_leeway {
+			let expiration_with_leeway =
+				expiration.checked_add_signed(options.leeway).unwrap_or(DateTime::<Utc>::MAX_UTC);
+			if (options.clock_fn)() > expiration_with_leeway {
 				Err(ValidationError::Expired)
 			} else {
 				Ok(self)
@@ -167,8 +161,7 @@ impl<T> Claims<T> {
 		F: Fn() -> DateTime<Utc>,
 	{
 		self.not_before.map_or(Err(ValidationError::NoClaim(Claim::NotBefore)), |not_before| {
-			let tiemstamp = (options.clock_fn)().timestamp() as u64;
-			if tiemstamp < not_before - options.leeway.num_seconds() as u64 {
+			if (options.clock_fn)() < not_before - options.leeway {
 				Err(ValidationError::NotMature)
 			} else {
 				Ok(self)
@@ -222,11 +215,11 @@ mod serde_timestamp {
 
 	pub fn serialize<S: Serializer>(time: &Option<DateTime<Utc>>, serializer: S) -> Result<S::Ok, S::Error> {
 		// `unwrap` is safe due to `skip_serializing_if` option
-		serializer.serialize_i64(time.unwrap().timestamp())
+		serializer.serialize_u64(time.unwrap().timestamp() as u64)
 	}
 
 	pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error> {
-		deserializer.deserialize_i64(TimestampVisitor).map(Some)
+		deserializer.deserialize_u64(TimestampVisitor).map(Some)
 	}
 }
 
