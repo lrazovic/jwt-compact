@@ -74,7 +74,6 @@ pub struct Empty {}
 ///
 /// [JWT spec]: https://tools.ietf.org/html/rfc7519#section-4.1
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Ord, PartialOrd)]
-#[non_exhaustive]
 pub struct Claims<T> {
 	/// Expiration time of the token.
 	#[serde(rename = "exp", default, skip_serializing_if = "Option::is_none", with = "self::serde_timestamp")]
