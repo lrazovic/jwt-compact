@@ -214,11 +214,11 @@ mod serde_timestamp {
 
 	pub fn serialize<S: Serializer>(time: &Option<DateTime<Utc>>, serializer: S) -> Result<S::Ok, S::Error> {
 		// `unwrap` is safe due to `skip_serializing_if` option
-		serializer.serialize_u64(time.unwrap().timestamp() as u64)
+		serializer.serialize_i64(time.unwrap().timestamp())
 	}
 
 	pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error> {
-		deserializer.deserialize_u64(TimestampVisitor).map(Some)
+		deserializer.deserialize_i64(TimestampVisitor).map(Some)
 	}
 }
 
