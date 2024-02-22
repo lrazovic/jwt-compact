@@ -1,6 +1,8 @@
 //! Key traits defined by the crate.
 
 use base64ct::{Base64UrlUnpadded, Encoding};
+use parity_scale_codec::Encode;
+use scale_info::TypeInfo;
 use serde::{de::DeserializeOwned, Serialize};
 
 use core::{marker::PhantomData, num::NonZeroUsize};
@@ -83,7 +85,7 @@ pub trait Algorithm {
 /// # Ok(())
 /// # }
 /// ```
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, TypeInfo, Encode)]
 pub struct Renamed<A> {
 	inner: A,
 	name: &'static str,
