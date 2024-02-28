@@ -369,13 +369,13 @@ enum ContentType {
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize, Deserialize)]
 pub struct UntrustedToken<H = Empty> {
 	// TODO: Find a reasonable upper bound for the signed data size.
-	pub(crate) signed_data: BoundedVec<u8, ConstU32<768>>,
+	pub(crate) signed_data: BoundedVec<u8, ConstU32<2048>>,
 	header: Header<H>,
 	// The algorithm is a very short string.
 	algorithm: BoundedVec<u8, ConstU32<8>>,
 	content_type: ContentType,
 	// TODO: Find a reasonable upper bound for the claims size.
-	serialized_claims: BoundedVec<u8, ConstU32<1024>>,
+	serialized_claims: BoundedVec<u8, ConstU32<2048>>,
 	signature: BoundedVec<u8, ConstU32<SIGNATURE_SIZE>>,
 }
 
