@@ -52,7 +52,11 @@ std = [
 	"rsa?/std",
 	"serde/std",
 ]
-clock = []
+clock = [
+	"chrono/clock",
+	"jwt-compact/clock"
+]
 es256k = [ "jwt-compact/es256k" ]
 ciborium = []
 ed25519-compact = []
+ed25519-dalek = []

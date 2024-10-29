@@ -64,7 +64,7 @@ bounded-collections = { version = "0.2.0", default-features = false, features = 
 ] }
 
 [dependencies.k256]
-version = "0.13.3"
+version = "0.13.4"
 default-features = false
 features = ["ecdsa"]
 optional = true
@@ -119,6 +119,18 @@ std = [
 	"scale-info/std",
 	"serde_json/std",
 	"bounded-collections/std",
+	"base64ct/std",
+	"chrono/std",
+	"ed25519-compact?/std",
+	"ed25519-dalek?/std",
+	"hmac/std",
+	"k256?/std",
+	"p256?/std",
+	"rsa?/std",
+	"serde/std",
+	"sha2/std",
+	"subtle/std",
+	"zeroize/std"
 ]
 # Enables getting the current time using `Utc::now()` from `chrono`.
 # Without it, some `TimeOptions` constructors, such as the `Default` impl,
@@ -144,3 +156,8 @@ required-features = ["rsa/pem"]
 
 [workspace]
 members = [".", "e2e-tests/no-std", "e2e-tests/wasm"]
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1

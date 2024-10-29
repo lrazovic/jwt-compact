@@ -1,26 +1,26 @@
 [package]
 name = "jwt-compact-wasm"
-version = "0.0.2"
+version = "0.0.19"
 authors = [
     "Alex Ostrovski <ostrovski.alex@gmail.com>",
     "Polimec Foundation <info@polimec.org>",
 ]
 edition = "2021"
 license = "Apache-2.0"
-description = "Testing usability of `jwt-compact` in WASM"
+description = "Usability of `jwt-compact` in WASM"
 repository = "https://github.com/slowli/jwt-compact"
 publish = false
-
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Os", "--enable-mutable-globals"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[dependencies]
-wasm-bindgen = "0.2.90"
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os", "--enable-mutable-globals"]
 
-chrono = { version = "0.4.22", features = ["wasmbind"] }
+[dependencies]
+wasm-bindgen = "0.2.95"
+
+chrono = { version = "0.4.38", features = ["wasmbind", "serde"] }
 serde = { version = "1.0", default-features = false, features = [
     "alloc",
     "derive",
@@ -28,12 +28,13 @@ serde = { version = "1.0", default-features = false, features = [
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 # Set up `getrandom` crate to use the host JS CSPRNG.
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.2.15", features = ["js"] }
+serde-wasm-bindgen = "0.6.5"
 
 [dependencies.jwt-compact]
 path = "../.."
 default-features = false
-features = ["clock", "ed25519-compact", "rsa", "k256", "p256"]
+features = ["clock", "ed25519-dalek", "rsa", "k256", "p256"]
 
 [features]
 std = ["getrandom/std", "jwt-compact/std", "serde/std", "serde_json/std"]
@@ -41,4 +42,4 @@ clock = []
 es256k = ["jwt-compact/es256k"]
 rsa = []
 ciborium = []
-ed25519-compact = []
+ed25519-dalek = []

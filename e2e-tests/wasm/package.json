@@ -1,6 +1,6 @@
 {
   "name": "jwt-compact-wasm",
-  "version": "0.0.2",
+  "version": "0.0.19",
   "private": true,
   "license": "Apache-2.0",
   "collaborators": [
@@ -15,11 +15,14 @@
     "test.js"
   ],
   "scripts": {
-    "build": "wasm-pack build --target nodejs",
+    "build": "wasm-pack build --target web --release",
     "test": "node test.js"
   },
   "dependencies": {
-    "jose": "^5.2.0",
     "jwt-compact-wasm": "file:pkg"
-  }
+  },
+  "devDependencies": {
+    "jose": "^5.9.6"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
