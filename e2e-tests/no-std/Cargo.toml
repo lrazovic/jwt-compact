@@ -27,7 +27,7 @@ once_cell = { version = "^1.16.0", default-features = false, optional = true }
 rand_chacha = { version = "^0.3.1", default-features = false, optional = true }
 rsa = { version = "^0.9", default-features = false, optional = true }
 
-[dependencies.jwt-compact]
+[dependencies.jwt-compact-frame]
 path = "../.."
 default-features = false
 
@@ -36,17 +36,17 @@ default-features = false
 [features]
 ed25519 = [
 	"getrandom",
-	"jwt-compact/ed25519-compact",
+	"jwt-compact-frame/ed25519-compact",
 	"once_cell",
 	"rand_chacha",
 ]
-rsa = [ "dep:rsa", "getrandom", "jwt-compact/rsa", "once_cell", "rand_chacha" ]
+rsa = [ "dep:rsa", "getrandom", "jwt-compact-frame/rsa", "once_cell", "rand_chacha" ]
 std = [
 	"anyhow/std",
 	"chrono/std",
 	"cortex-m/std",
 	"getrandom?/std",
-	"jwt-compact/std",
+	"jwt-compact-frame/std",
 	"once_cell?/std",
 	"rand_chacha?/std",
 	"rsa?/std",
@@ -54,9 +54,9 @@ std = [
 ]
 clock = [
 	"chrono/clock",
-	"jwt-compact/clock"
+	"jwt-compact-frame/clock"
 ]
-es256k = [ "jwt-compact/es256k" ]
+es256k = [ "jwt-compact-frame/es256k" ]
 ciborium = []
 ed25519-compact = []
 ed25519-dalek = []

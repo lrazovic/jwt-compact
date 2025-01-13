@@ -10,7 +10,7 @@ use serde_json::json;
 mod shared;
 
 use crate::shared::{create_claims, test_algorithm, Obj, SampleClaims};
-use jwt_compact::{alg::*, prelude::*, Algorithm, AlgorithmExt, ParseError, Thumbprint, ValidationError};
+use jwt_compact_frame::{alg::*, prelude::*, Algorithm, AlgorithmExt, ParseError, Thumbprint, ValidationError};
 
 #[test]
 fn hs256_reference() {
@@ -99,7 +99,7 @@ fn hs512_reference() {
 fn es256_reference() {
 	//! Taken from https://www.rfc-editor.org/rfc/rfc7515.html
 
-	use jwt_compact::jwk::JsonWebKey;
+	use jwt_compact_frame::jwk::JsonWebKey;
 
 	type PublicKey = <Es256 as Algorithm>::VerifyingKey;
 
@@ -355,7 +355,7 @@ fn es256k_algorithm() {
 #[cfg(any(feature = "es256k", feature = "k256"))]
 #[test]
 fn high_s_in_signature_is_successfully_validated() {
-	use jwt_compact::jwk::JsonWebKey;
+	use jwt_compact_frame::jwk::JsonWebKey;
 
 	type PublicKey = <Es256k as Algorithm>::VerifyingKey;
 

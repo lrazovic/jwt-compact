@@ -104,7 +104,7 @@
 //!
 //! ```
 //! use chrono::{Duration, Utc};
-//! use jwt_compact::{prelude::*, alg::{Hs256, Hs256Key}};
+//! use jwt_compact_frame::{prelude::*, alg::{Hs256, Hs256Key}};
 //! use serde::{Serialize, Deserialize};
 //!
 //! /// Custom claims encoded in the token.
@@ -152,7 +152,7 @@
 //! ```
 //! # use chrono::Duration;
 //! # use hex_buffer_serde::{Hex as _, HexForm};
-//! # use jwt_compact::{prelude::*, alg::{Hs256, Hs256Key}};
+//! # use jwt_compact_frame::{prelude::*, alg::{Hs256, Hs256Key}};
 //! # use serde::{Serialize, Deserialize};
 //! /// Custom claims encoded in the token.
 //! #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -190,7 +190,7 @@
 //!
 //! ```
 //! # use chrono::Duration;
-//! # use jwt_compact::{prelude::*, alg::{Hs256, Hs256Key}};
+//! # use jwt_compact_frame::{prelude::*, alg::{Hs256, Hs256Key}};
 //! # use serde::{Deserialize, Serialize};
 //! #[derive(Debug, PartialEq, Serialize, Deserialize)]
 //! struct CustomClaims { subject: [u8; 32] }
@@ -225,7 +225,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 // Documentation settings.
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/jwt-compact/0.8.0")]
+#![doc(html_root_url = "https://docs.rs/jwt-compact-frame")]
 // Linter settings.
 #![warn(missing_debug_implementations, missing_docs, bare_trait_objects)]
 #![warn(clippy::all, clippy::pedantic)]

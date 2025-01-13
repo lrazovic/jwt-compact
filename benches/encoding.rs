@@ -5,7 +5,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use jwt_compact::{
+use jwt_compact_frame::{
 	alg::{Hs256, Hs256Key},
 	AlgorithmExt, Claims, Header, TimeOptions, UntrustedToken,
 };

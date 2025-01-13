@@ -15,7 +15,7 @@ use crate::{Claim, ValidationError};
 ///
 /// ```
 /// # use chrono::{Duration, Utc};
-/// # use jwt_compact::TimeOptions;
+/// # use jwt_compact_frame::TimeOptions;
 /// // Default options.
 /// let default_options = TimeOptions::default();
 /// let options_with_custom_leeway =

@@ -107,7 +107,7 @@ impl<T: fmt::Debug + 'static> std::error::Error for WeakKeyError<T> {}
 ///
 /// ```
 /// # use rand::thread_rng;
-/// # use jwt_compact::{prelude::*, alg::{Hs256, Hs256Key, StrongAlg, StrongKey}};
+/// # use jwt_compact_frame::{prelude::*, alg::{Hs256, Hs256Key, StrongAlg, StrongKey}};
 /// # fn main() -> anyhow::Result<()> {
 /// let weak_key = Hs256Key::new(b"too short!");
 /// assert!(StrongKey::try_from(weak_key).is_err());

@@ -151,7 +151,7 @@ impl std::error::Error for ModulusBitsError {}
 /// use [`StrongAlg`](super::StrongAlg) wrapper around `Rsa`:
 ///
 /// ```
-/// # use jwt_compact::alg::{StrongAlg, Rsa};
+/// # use jwt_compact_frame::alg::{StrongAlg, Rsa};
 /// const ALG: StrongAlg<Rsa> = StrongAlg(Rsa::rs256());
 /// // `ALG` will not support RSA keys with unsecure lengths by design!
 /// ```

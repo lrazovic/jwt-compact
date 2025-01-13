@@ -6,7 +6,7 @@ use assert_matches::assert_matches;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use sha2::{digest::Digest, Sha256, Sha384, Sha512};
 
-use jwt_compact::{
+use jwt_compact_frame::{
 	alg::Hs256Key,
 	jwk::{JsonWebKey, JwkError, KeyType},
 };
@@ -267,8 +267,8 @@ mod es256k {
 	use super::*;
 
 	#[cfg(feature = "k256")]
-	use jwt_compact::alg::VerifyingKey;
-	use jwt_compact::{
+	use jwt_compact_frame::alg::VerifyingKey;
+	use jwt_compact_frame::{
 		alg::{Es256k, SigningKey},
 		Algorithm,
 	};
@@ -451,7 +451,7 @@ mod es256k {
 mod es256 {
 	use super::*;
 
-	use jwt_compact::{
+	use jwt_compact_frame::{
 		alg::{Es256, SigningKey, VerifyingKey},
 		Algorithm,
 	};
@@ -633,7 +633,7 @@ mod es256 {
 #[cfg(any(feature = "exonum-crypto", feature = "ed25519-dalek", feature = "ed25519-compact"))]
 mod ed25519 {
 	use super::*;
-	use jwt_compact::{
+	use jwt_compact_frame::{
 		alg::{Ed25519, SigningKey, VerifyingKey},
 		Algorithm,
 	};

@@ -67,7 +67,7 @@ pub trait Algorithm {
 /// # Examples
 ///
 /// ```
-/// use jwt_compact::{alg::{Hs256, Hs256Key}, prelude::*, Empty, Renamed};
+/// use jwt_compact_frame::{alg::{Hs256, Hs256Key}, prelude::*, Empty, Renamed};
 ///
 /// # fn main() -> anyhow::Result<()> {
 /// let alg = Renamed::new(Hs256, "HS2");

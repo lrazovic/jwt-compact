@@ -6,7 +6,7 @@
 ![no_std supported](https://img.shields.io/badge/no__std-tested-green.svg)
 
 **Documentation:** [![Docs.rs](https://docs.rs/jwt-compact/badge.svg)](https://docs.rs/jwt-compact/)
-[![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/jwt-compact/jwt_compact/)
+[![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/jwt-compact/jwt_compact_frame/)
 
 Minimalistic [JSON web token (JWT)][JWT] implementation with focus on type safety
 and secure cryptographic primitives.
@@ -17,14 +17,14 @@ Add this to your `Crate.toml`:
 
 ```toml
 [dependencies]
-jwt-compact = "0.8.0"
+jwt-compact-frame = "0.9.0-beta.0"
 ```
 
 ## Basic token lifecycle
 
 ```rust
 use chrono::{Duration, Utc};
-use jwt_compact::{prelude::*, alg::{Hs256, Hs256Key}};
+use jwt_compact_frame::{prelude::*, alg::{Hs256, Hs256Key}};
 use serde::{Serialize, Deserialize};
 
 /// Custom claims encoded in the token.

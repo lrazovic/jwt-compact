@@ -31,15 +31,15 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 getrandom = { version = "0.2.15", features = ["js"] }
 serde-wasm-bindgen = "0.6.5"
 
-[dependencies.jwt-compact]
+[dependencies.jwt-compact-frame]
 path = "../.."
 default-features = false
 features = ["clock", "ed25519-dalek", "rsa", "k256", "p256"]
 
 [features]
-std = ["getrandom/std", "jwt-compact/std", "serde/std", "serde_json/std"]
+std = ["getrandom/std", "jwt-compact-frame/std", "serde/std", "serde_json/std"]
 clock = []
-es256k = ["jwt-compact/es256k"]
+es256k = ["jwt-compact-frame/es256k"]
 rsa = []
 ciborium = []
 ed25519-dalek = []

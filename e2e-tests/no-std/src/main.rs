@@ -16,10 +16,10 @@ use serde::{Deserialize, Serialize};
 use alloc::{borrow::ToOwned, string::String};
 
 #[cfg(feature = "ed25519")]
-use jwt_compact::alg::Ed25519;
+use jwt_compact_frame::alg::Ed25519;
 #[cfg(feature = "rsa")]
-use jwt_compact::alg::Rsa;
-use jwt_compact::{
+use jwt_compact_frame::alg::Rsa;
+use jwt_compact_frame::{
 	alg::{Hs256, Hs384, Hs512, SigningKey, VerifyingKey},
 	prelude::*,
 	Algorithm,
@@ -133,7 +133,7 @@ impl TokenChecker {
 
 	#[cfg(feature = "rsa")]
 	fn roundtrip_rsa(&self, alg: &Rsa, private_key_der: &[u8]) -> anyhow::Result<()> {
-		use jwt_compact::alg::{RsaPrivateKey, RsaPublicKey};
+		use jwt_compact_frame::alg::{RsaPrivateKey, RsaPublicKey};
 		use rsa::pkcs1::DecodeRsaPrivateKey;
 
 		hprintln!("Testing algorithm: {}", alg.name());

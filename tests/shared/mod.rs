@@ -7,7 +7,7 @@ use hex_buffer_serde::{Hex as _, HexForm};
 use rand::thread_rng;
 use serde::{Deserialize, Serialize};
 
-use jwt_compact::{prelude::*, Algorithm, ValidationError};
+use jwt_compact_frame::{prelude::*, Algorithm, ValidationError};
 
 pub type Obj = serde_json::Map<String, serde_json::Value>;
 

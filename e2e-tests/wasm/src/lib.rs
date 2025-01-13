@@ -13,7 +13,7 @@ use wasm_bindgen::prelude::*;
 use alloc::string::{String, ToString};
 use core::fmt;
 
-use jwt_compact::{
+use jwt_compact_frame::{
 	alg::{Ed25519, Es256, Es256k, Hs256, Hs384, Hs512, Rsa},
 	jwk::{JsonWebKey, JwkError},
 	Algorithm, AlgorithmExt, Claims, Header, TimeOptions, Token, UntrustedToken,

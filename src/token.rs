@@ -37,7 +37,7 @@ const SIGNATURE_SIZE: u32 = 256;
 ///
 /// ```
 /// # use assert_matches::assert_matches;
-/// # use jwt_compact::{
+/// # use jwt_compact_frame::{
 /// #     alg::{Hs256, Hs256Key}, AlgorithmExt, Claims, Header, Thumbprint, UntrustedToken,
 /// # };
 /// # fn main() -> anyhow::Result<()> {
@@ -161,7 +161,7 @@ impl<'de, const N: usize> Deserialize<'de> for Thumbprint<N> {
 /// For added fluency, you may use `with_*` methods:
 ///
 /// ```
-/// # use jwt_compact::Header;
+/// # use jwt_compact_frame::Header;
 /// use sha2::{digest::Digest, Sha256};
 ///
 /// let my_key_cert = // DER-encoded key certificate
@@ -334,7 +334,7 @@ enum ContentType {
 /// # Examples
 ///
 /// ```
-/// # use jwt_compact::UntrustedToken;
+/// # use jwt_compact_frame::UntrustedToken;
 /// let token_str = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9.eyJp\
 ///     c3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leG\
 ///     FtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.dBjftJeZ4CVP-mB92K27uhbUJ\
@@ -351,7 +351,7 @@ enum ContentType {
 ///
 /// ```
 /// # use serde::Deserialize;
-/// # use jwt_compact::UntrustedToken;
+/// # use jwt_compact_frame::UntrustedToken;
 /// #[derive(Debug, Clone, Deserialize)]
 /// struct HeaderExtensions {
 ///     custom: String,
@@ -415,7 +415,7 @@ impl<T, H> Token<T, H> {
 /// # Examples
 ///
 /// ```
-/// # use jwt_compact::{alg::{Hs256, Hs256Key, Hs256Signature}, prelude::*};
+/// # use jwt_compact_frame::{alg::{Hs256, Hs256Key, Hs256Signature}, prelude::*};
 /// # use chrono::Duration;
 /// # use serde::{Deserialize, Serialize};
 /// #
@@ -567,8 +567,9 @@ impl<H> UntrustedToken<H> {
 		T: DeserializeOwned,
 	{
 		match self.content_type {
-			ContentType::Json =>
-				serde_json::from_slice(&self.serialized_claims).map_err(ValidationError::MalformedClaims),
+			ContentType::Json => {
+				serde_json::from_slice(&self.serialized_claims).map_err(ValidationError::MalformedClaims)
+			},
 
 			#[cfg(feature = "ciborium")]
 			ContentType::Cbor => {

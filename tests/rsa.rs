@@ -7,7 +7,7 @@ use rsa::{pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePublicKey};
 mod shared;
 
 use crate::shared::{create_claims, test_algorithm, CompactClaims, SampleClaims};
-use jwt_compact::{alg::*, prelude::*, Algorithm, ValidationError};
+use jwt_compact_frame::{alg::*, prelude::*, Algorithm, ValidationError};
 
 const RSA_PRIVATE_KEY: &str = "\
 -----BEGIN RSA PRIVATE KEY-----

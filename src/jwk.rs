@@ -11,7 +11,7 @@
 //! # Examples
 //!
 //! ```
-//! use jwt_compact::{alg::Hs256Key, jwk::JsonWebKey};
+//! use jwt_compact_frame::{alg::Hs256Key, jwk::JsonWebKey};
 //! use sha2::Sha256;
 //!
 //! # fn main() -> anyhow::Result<()> {
@@ -280,11 +280,13 @@ impl JsonWebKey<'_> {
 	#[must_use]
 	pub fn to_verifying_key(&self) -> Self {
 		match self {
-			Self::Rsa { modulus, public_exponent, .. } =>
-				Self::Rsa { modulus: modulus.clone(), public_exponent: public_exponent.clone(), private_parts: None },
+			Self::Rsa { modulus, public_exponent, .. } => {
+				Self::Rsa { modulus: modulus.clone(), public_exponent: public_exponent.clone(), private_parts: None }
+			},
 
-			Self::EllipticCurve { curve, x, y, .. } =>
-				Self::EllipticCurve { curve: curve.clone(), x: x.clone(), y: y.clone(), secret: None },
+			Self::EllipticCurve { curve, x, y, .. } => {
+				Self::EllipticCurve { curve: curve.clone(), x: x.clone(), y: y.clone(), secret: None }
+			},
 
 			Self::Symmetric { secret } => Self::Symmetric { secret: secret.clone() },
 
