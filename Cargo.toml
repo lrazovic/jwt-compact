@@ -11,13 +11,13 @@ authors = [
 	"Polimec Foundation <info@polimec.org>",
 ]
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.75"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["JWT", "token", "authorization"]
 categories = ["web-programming", "cryptography", "no-std"]
-description = "Minimalistic JWT implementation with focus on type safety and secure cryptographic primitives"
-repository = "https://github.com/slowli/jwt-compact"
+description = "Minimalistic JWT implementation with focus on type safety and secure cryptographic primitives. Works in a FRAME/Polkadot SDK context."
+repository = "https://github.com/lrazovic/jwt-compact"
 
 exclude = ["e2e-tests"]
 

@@ -1,8 +1,11 @@
-# Compact JWT implementation in Rust
+# Compact JWT implementation in Rust, adapted for FRAME/Polkadot SDK.
+
+> [!NOTE]  
+> This is a fork of the original [jwt-compact](https://github.com/slowli/jwt-compact). All credits go to the original author.
 
 [![Build Status](https://github.com/slowli/jwt-compact/workflows/CI/badge.svg?branch=master)](https://github.com/slowli/jwt-compact/actions)
 [![License: Apache-2.0](https://img.shields.io/github/license/slowli/jwt-compact.svg)](https://github.com/slowli/jwt-compact/blob/master/LICENSE)
-![rust 1.65+ required](https://img.shields.io/badge/rust-1.65+-blue.svg?label=Required%20Rust)
+![rust 1.75+ required](https://img.shields.io/badge/rust-1.75+-blue.svg?label=Required%20Rust)
 ![no_std supported](https://img.shields.io/badge/no__std-tested-green.svg)
 
 **Documentation:** [![Docs.rs](https://docs.rs/jwt-compact/badge.svg)](https://docs.rs/jwt-compact/)
