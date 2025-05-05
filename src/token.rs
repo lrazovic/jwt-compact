@@ -2,7 +2,7 @@
 
 use base64ct::{Base64UrlUnpadded, Encoding};
 use bounded_collections::{BoundedVec, ConstU32};
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+use parity_scale_codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use serde::{
 	de::{DeserializeOwned, Error as DeError, Visitor},
@@ -312,7 +312,7 @@ pub struct CompleteHeader<'a, T> {
 	pub inner: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Decode, Encode, TypeInfo, MaxEncodedLen, Serialize, Deserialize, DecodeWithMemTracking)]
 enum ContentType {
 	Json,
 	#[cfg(feature = "ciborium")]
@@ -366,7 +366,7 @@ enum ContentType {
 /// println!("{}", extensions.custom);
 /// # Ok::<_, anyhow::Error>(())
 /// ```
-#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize, Deserialize)]
+#[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq, MaxEncodedLen, Serialize, Deserialize, DecodeWithMemTracking)]
 pub struct UntrustedToken<H = Empty> {
 	// TODO: Find a reasonable upper bound for the signed data size.
 	pub(crate) signed_data: BoundedVec<u8, ConstU32<2048>>,
